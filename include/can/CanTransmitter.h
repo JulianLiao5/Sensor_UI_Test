@@ -9,6 +9,7 @@
 
 #include <utils/PITime.h>
 #include "controlcan.h"
+#include "CanNode.h"
 
 #include <glog/logging.h>
 
@@ -196,6 +197,8 @@ namespace PIAUTO {
              */
             bool SendData(VCI_CAN_OBJ *);
 
+            std::shared_ptr<std::vector<VCI_CAN_OBJ>> GetVCICanObjs();
+
             /**
              * @brief Receive frames thread.
              */
@@ -250,6 +253,7 @@ namespace PIAUTO {
             DWORD devtype;
             DWORD index;
             DWORD cannum;
+            std::vector<VCI_CAN_OBJ> mCanObjs;
         };
     }
 }

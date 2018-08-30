@@ -45,6 +45,16 @@ int main(int argc, char *argv[]) {
   }
 
   while (1) {
+    for (int i = 0; i != RADAR77_NUM; ++i) {
+        std::shared_ptr<std::vector<VCI_CAN_OBJ>> radar77_objs = radars[i]->GetRadar77Objs();
+        if (radar77_objs->size() > 0) {
+          printf("radar77_objs->size: %ld\n", radar77_objs->size());
+        }
+        for (VCI_CAN_OBJ radar_obj : (*radar77_objs)) {
+            radars[i]->UpdateAttributes(radar_obj);
+        }
+    }
+
     OGM->Reset();
 
     OGM->DrawLineInMap(cv::Point2d(0, 20), cv::Point2d(0, -20), CellStatus::UNKNOWN);
@@ -66,6 +76,9 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i != RADAR77_NUM; ++i) {
       radars[i]->GetObjectInfoByTimes(radarObjs[i], 20);
       for (int j = 0; j != 20; ++j) {
+        if (radarObjs[i][j].size() > 0) {
+          printf("radarObjs[%d][%d].size: %ld\n", i, j, radarObjs[i][j].size());
+        }
         for (auto &object_temp : radarObjs[i][j]) {
           Eigen::Vector3d coordinate = _sc.Radar77Obj2Coordinate(object_temp, i);
           OGM->DrawRectInMap(Rect(coordinate.x(), coordinate.y(), 0.5, 0.11));

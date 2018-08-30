@@ -14,7 +14,7 @@ namespace PIAUTO {
                 UCHAR mode,
                 UCHAR timing0,
                 UCHAR timing1
-        ) : devtype(dt), index(idx), cannum(cn) {
+        ) : devtype(dt), index(idx), cannum(cn), mCanObjs(0) {
 
             auto oldmask = umask(0);
             mkdir(LOGPATH, 0777);
@@ -31,6 +31,7 @@ namespace PIAUTO {
 
             Init(code, mask, filterType, mode, timing0, timing1);
             m_connect = true;
+
             ReceiveThread = new thread(&CanTransmitter::ReceiveData, this);
 
             usleep(5 * 1000);
@@ -163,6 +164,9 @@ namespace PIAUTO {
             return ret;
         }
 
+        std::shared_ptr<std::vector<VCI_CAN_OBJ>> CanTransmitter::GetVCICanObjs() {
+            return std::make_shared<std::vector<VCI_CAN_OBJ>>(mCanObjs);
+        }
 
         void CanTransmitter::ReceiveData() {
             cout << "ReceiveData thread begin!" << endl;
@@ -172,6 +176,7 @@ namespace PIAUTO {
             UINT buffLen = 0;
             while (m_connect) {
                 buffLen = VCI_GetReceiveNum(devtype, index, cannum);
+                printf("[%s], buffLen: %d\n", __func__, buffLen);
                 if (buffLen != 0) {
                     buffLen = std::min(buffLen, 100U);
                     len = VCI_Receive(devtype, index, cannum, vciCanObj, buffLen, 100);
@@ -189,10 +194,13 @@ namespace PIAUTO {
                         SendData(&can);
                     } else {
                         recvFrameNum += len;
+                        for (unsigned int i = 0; i < len; i++) {
+                            mCanObjs.push_back(vciCanObj[i]);
+                        }
                     }
-                }
-                else
+                } else {
                     usleep(5 * 1000);
+                }
             }
             cout << "Receive Thread Exit" << endl;
         }

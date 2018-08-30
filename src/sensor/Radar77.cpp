@@ -24,7 +24,12 @@ namespace PIAUTO {
             delete attri;
         }
 
+        std::shared_ptr<std::vector<VCI_CAN_OBJ>> Radar_77::GetRadar77Objs() {
+          return ct->GetVCICanObjs();
+        }
+
         bool Radar_77::UpdateAttributes(VCI_CAN_OBJ &frame) {
+            printf("[%s]\n", __func__);
             if (frame.ID < static_cast<unsigned int>(0x500 + 0x40 *ID) || frame.ID > static_cast<unsigned int>(0x500 + 0x40 *ID + 0x3f)) {
                 return true;
             }
