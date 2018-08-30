@@ -205,7 +205,8 @@ namespace PIAUTO {
             void ReceiveData();
 
             void FrameRateMonitor() {
-                cout << "FrameRateMonitor thread begin!" << endl;
+                std::thread::id frame_rate_monitor_id = std::this_thread::get_id();
+                cout << "FrameRateMonitor thread(" << frame_rate_monitor_id << ") begin!" << endl;
                 unsigned timer = 0;
                 int sendFrameNum_temp = 0;
                 int recvFrameNum_temp = 0;
@@ -227,7 +228,7 @@ namespace PIAUTO {
                 }
 
                 FrameRate = (sendFrameNum + recvFrameNum) / timer;
-                cout << "RunTime       ： " << timer << "s" << endl;
+                cout << "RunTime       ： " << std::dec << timer << "s" << endl;
                 cout << "SendFrameNum： " << sendFrameNum << endl;
                 cout << "RecvFrameNum： " << recvFrameNum << endl;
                 cout << "MaxSendFPS  : " << maxSendFrameRate << " fps" << endl;
@@ -253,6 +254,7 @@ namespace PIAUTO {
             DWORD devtype;
             DWORD index;
             DWORD cannum;
+            std::mutex mutexCanObjs;
             std::vector<VCI_CAN_OBJ> mCanObjs;
         };
     }

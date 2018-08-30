@@ -45,10 +45,12 @@ int main(int argc, char *argv[]) {
   }
 
   while (1) {
+    std::thread::id main_id = std::this_thread::get_id();
     for (int i = 0; i != RADAR77_NUM; ++i) {
         std::shared_ptr<std::vector<VCI_CAN_OBJ>> radar77_objs = radars[i]->GetRadar77Objs();
         if (radar77_objs->size() > 0) {
-          printf("radar77_objs->size: %ld\n", radar77_objs->size());
+          cout << "[" << __func__ << "] in thread(" << main_id << ")" << " radar77_objs->size: "
+            << std::dec << radar77_objs->size() << endl;
         }
         for (VCI_CAN_OBJ radar_obj : (*radar77_objs)) {
             radars[i]->UpdateAttributes(radar_obj);

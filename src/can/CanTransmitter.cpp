@@ -165,11 +165,16 @@ namespace PIAUTO {
         }
 
         std::shared_ptr<std::vector<VCI_CAN_OBJ>> CanTransmitter::GetVCICanObjs() {
-            return std::make_shared<std::vector<VCI_CAN_OBJ>>(mCanObjs);
+            std::unique_lock<std::mutex> canObjsLock(mutexCanObjs);
+            std::vector<VCI_CAN_OBJ> tempCanObjs = mCanObjs;
+            mCanObjs.clear();
+            canObjsLock.unlock();
+            return std::make_shared<std::vector<VCI_CAN_OBJ>>(tempCanObjs);
         }
 
         void CanTransmitter::ReceiveData() {
-            cout << "ReceiveData thread begin!" << endl;
+            std::thread::id receive_data_id = std::this_thread::get_id();
+            cout << "ReceiveData thread(" << receive_data_id << ") begin!" << endl;
             VCI_CAN_OBJ vciCanObj[100];
             VCI_ERR_INFO errInfo{0};
             ULONG len;
@@ -181,6 +186,7 @@ namespace PIAUTO {
                     buffLen = std::min(buffLen, 100U);
                     len = VCI_Receive(devtype, index, cannum, vciCanObj, buffLen, 100);
                     if (len == 0xFFFFFFFF) {
+                        printf("len ERROR!\n");
                         VCI_ReadErrInfo(devtype, index, cannum, &errInfo);
                         LOG(ERROR) << "ReceiveData error, ErrCode=" << std::hex << errInfo.ErrCode
                                    << " PassiveErrData=" << (UINT) errInfo.Passive_ErrData[0]
@@ -194,9 +200,12 @@ namespace PIAUTO {
                         SendData(&can);
                     } else {
                         recvFrameNum += len;
+                        printf("[%s], len: %d\n", __func__, len);
+                        std::unique_lock<std::mutex> canObjsLock(mutexCanObjs);
                         for (unsigned int i = 0; i < len; i++) {
                             mCanObjs.push_back(vciCanObj[i]);
                         }
+                        canObjsLock.unlock();
                     }
                 } else {
                     usleep(5 * 1000);
