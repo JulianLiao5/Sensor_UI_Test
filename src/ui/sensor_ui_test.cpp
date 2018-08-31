@@ -19,14 +19,12 @@ using namespace std;
 #define TIME_1    0x1C
 
 int main(int argc, char *argv[]) {
-  PIAUTO::sensor::SensorCoordinate _sc;
-
   PIAUTO::chassis::Radar_77 *radars[RADAR77_NUM];
   PIAUTO::chassis::CanTransmitter ct(VCI_USBCAN2, 0, 0, 0, 0, 0, 0, TIME_0, TIME_1);
   for (int i = 0; i < RADAR77_NUM; i++) {
-    radars[i] = new PIAUTO::chassis::Radar_77(i, &ct);
+      radars[i] = new PIAUTO::chassis::Radar_77(i, &ct);
       PIAUTO::chassis::CanTransmitter::CanParse radarParse = std::bind(&PIAUTO::chassis::Radar_77::UpdateAttributes, radars[i], std::placeholders::_1);
-    ct.registerCallbacks(radarParse);
+      ct.registerCallbacks(radarParse);
   }
 
   // radar data buffer
@@ -46,6 +44,8 @@ int main(int argc, char *argv[]) {
   if (car.data == nullptr) {
     OGM->DrawRectInMap(Rect(0, 0, 1, 1.6));
   }
+
+  PIAUTO::sensor::SensorCoordinate _sc;
 
   while (1) {
     std::thread::id main_id = std::this_thread::get_id();

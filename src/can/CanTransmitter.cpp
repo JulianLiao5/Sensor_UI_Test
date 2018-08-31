@@ -211,10 +211,21 @@ namespace PIAUTO {
         }
 
 
-        void CanTransmitter::registerCallbacks(CanParse parse) {
+        void CanTransmitter::registerCallbacks(CanParse &parse) {
           std::unique_lock<std::mutex> parsesLock(mutexParses);
           parses_->push_back(parse);
           parsesLock.unlock();
+        }
+
+        void CanTransmitter::unregisterCallbacks(CanParse &parse) {
+            std::unique_lock<std::mutex> parsesLock(mutexParses);
+            for (int i = 0; i < parses_.size(); i++) {
+                if (parse == parses_[i]) {
+                    parses_.erase(parses_.begin() + i);
+                    break;
+                }
+            }
+            parsesLock.unlock();
         }
 
         //Tools functions

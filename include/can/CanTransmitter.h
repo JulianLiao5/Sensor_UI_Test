@@ -243,7 +243,8 @@ namespace PIAUTO {
                 cout << "FrameRateMonitor Thread Exit" << endl;
             };
 
-            void registerCallbacks(CanParse canParse);
+            void registerCallbacks(CanParse &canParse);
+            void unregisterCallbacks(CanParse &canParse);
 
         private:
             std::thread *monitor_Thread;
