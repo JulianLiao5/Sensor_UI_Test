@@ -5,6 +5,7 @@
 	> Created Time: 2018年08月28日 星期二 14时41分45秒
  ************************************************************************/
 
+#include<functional>
 #include<iostream>
 
 #include <opencv2/core.hpp>
@@ -24,6 +25,8 @@ int main(int argc, char *argv[]) {
   PIAUTO::chassis::CanTransmitter ct(VCI_USBCAN2, 0, 0, 0, 0, 0, 0, TIME_0, TIME_1);
   for (int i = 0; i < RADAR77_NUM; i++) {
     radars[i] = new PIAUTO::chassis::Radar_77(i, &ct);
+      PIAUTO::chassis::CanTransmitter::CanParse radarParse = std::bind(&PIAUTO::chassis::Radar_77::UpdateAttributes, radars[i], std::placeholders::_1);
+    ct.registerCallbacks(radarParse);
   }
 
   // radar data buffer
@@ -46,16 +49,7 @@ int main(int argc, char *argv[]) {
 
   while (1) {
     std::thread::id main_id = std::this_thread::get_id();
-    for (int i = 0; i != RADAR77_NUM; ++i) {
-        std::shared_ptr<std::vector<VCI_CAN_OBJ>> radar77_objs = radars[i]->GetRadar77Objs();
-        if (radar77_objs->size() > 0) {
-          cout << "[" << __func__ << "] in thread(" << main_id << ")" << " radar77_objs->size: "
-            << std::dec << radar77_objs->size() << endl;
-        }
-        for (VCI_CAN_OBJ radar_obj : (*radar77_objs)) {
-            radars[i]->UpdateAttributes(radar_obj);
-        }
-    }
+    cout << "[" << __func__ << "] in thread(" << main_id << ")" << endl;
 
     OGM->Reset();
 
@@ -85,6 +79,7 @@ int main(int argc, char *argv[]) {
           Eigen::Vector3d coordinate = _sc.Radar77Obj2Coordinate(object_temp, i);
           OGM->DrawRectInMap(Rect(coordinate.x(), coordinate.y(), 0.5, 0.11));
         }
+        radarObjs[i][j].clear();
       }
     }
 

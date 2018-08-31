@@ -63,8 +63,6 @@ namespace PIAUTO {
 
             ~Radar_77() override;
 
-            std::shared_ptr<std::vector<VCI_CAN_OBJ>> GetRadar77Objs();
-
             bool UpdateAttributes(VCI_CAN_OBJ &) override;
 
             bool VerifyFrameTimer() override;

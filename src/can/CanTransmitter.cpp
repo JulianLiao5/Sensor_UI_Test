@@ -1,6 +1,7 @@
 
 #include <sys/stat.h>
 #include <can/CanTransmitter.h>
+#include <sensor/Radar77.h>
 
 namespace PIAUTO {
     namespace chassis {
@@ -14,7 +15,7 @@ namespace PIAUTO {
                 UCHAR mode,
                 UCHAR timing0,
                 UCHAR timing1
-        ) : devtype(dt), index(idx), cannum(cn), mCanObjs(0) {
+        ) : devtype(dt), index(idx), cannum(cn) {
 
             auto oldmask = umask(0);
             mkdir(LOGPATH, 0777);
@@ -30,6 +31,7 @@ namespace PIAUTO {
             }
 
             Init(code, mask, filterType, mode, timing0, timing1);
+
             m_connect = true;
 
             ReceiveThread = new thread(&CanTransmitter::ReceiveData, this);
@@ -164,14 +166,6 @@ namespace PIAUTO {
             return ret;
         }
 
-        std::shared_ptr<std::vector<VCI_CAN_OBJ>> CanTransmitter::GetVCICanObjs() {
-            std::unique_lock<std::mutex> canObjsLock(mutexCanObjs);
-            std::vector<VCI_CAN_OBJ> tempCanObjs = mCanObjs;
-            mCanObjs.clear();
-            canObjsLock.unlock();
-            return std::make_shared<std::vector<VCI_CAN_OBJ>>(tempCanObjs);
-        }
-
         void CanTransmitter::ReceiveData() {
             std::thread::id receive_data_id = std::this_thread::get_id();
             cout << "ReceiveData thread(" << receive_data_id << ") begin!" << endl;
@@ -201,17 +195,26 @@ namespace PIAUTO {
                     } else {
                         recvFrameNum += len;
                         printf("[%s], len: %d\n", __func__, len);
-                        std::unique_lock<std::mutex> canObjsLock(mutexCanObjs);
+                        std::unique_lock<std::mutex> parsesLock(mutexParses);
                         for (unsigned int i = 0; i < len; i++) {
-                            mCanObjs.push_back(vciCanObj[i]);
+                            for (CanParse parse : *(parses_)) {
+                              parse(vciCanObj[i]);
+                            }
                         }
-                        canObjsLock.unlock();
+                        parsesLock.unlock();
                     }
                 } else {
                     usleep(5 * 1000);
                 }
             }
             cout << "Receive Thread Exit" << endl;
+        }
+
+
+        void CanTransmitter::registerCallbacks(CanParse parse) {
+          std::unique_lock<std::mutex> parsesLock(mutexParses);
+          parses_->push_back(parse);
+          parsesLock.unlock();
         }
 
         //Tools functions

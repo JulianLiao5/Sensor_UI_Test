@@ -123,13 +123,13 @@ namespace PIAUTO {
                 return false;
             }
 
-            auto temp_tail = tail - 1;
             for (int i = _len - 1; i >= 0; --i) {
-                if (temp_tail < 0) {
-                    temp_tail += bufSize;
+                if (--tail < 0) {
+                    tail = 0;
+                    printf("get data too much, no enough data!\n");
+                    return false;
                 }
-                _buf[i] = buf[temp_tail];
-                --temp_tail;
+                _buf[i] = buf[tail];
             }
             return true;
         }

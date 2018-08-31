@@ -2,6 +2,7 @@
 
 #include <condition_variable>
 #include <fstream>
+#include <functional>
 #include <iostream>
 #include <mutex>
 #include <string>
@@ -22,6 +23,8 @@ using std::thread;
 
 namespace PIAUTO {
     namespace chassis {
+
+
         /**
        *  A custom semaphore implemented by condition_variable .
        */
@@ -127,6 +130,9 @@ namespace PIAUTO {
          */
         class CanTransmitter {
         public:
+
+            typedef std::function<bool (VCI_CAN_OBJ &)> CanParse;
+
             /**
              * @brief Constructor
              * @param dt Device type.
@@ -197,8 +203,6 @@ namespace PIAUTO {
              */
             bool SendData(VCI_CAN_OBJ *);
 
-            std::shared_ptr<std::vector<VCI_CAN_OBJ>> GetVCICanObjs();
-
             /**
              * @brief Receive frames thread.
              */
@@ -239,6 +243,8 @@ namespace PIAUTO {
                 cout << "FrameRateMonitor Thread Exit" << endl;
             };
 
+            void registerCallbacks(CanParse canParse);
+
         private:
             std::thread *monitor_Thread;
             int sendFrameNum = 0;
@@ -254,8 +260,8 @@ namespace PIAUTO {
             DWORD devtype;
             DWORD index;
             DWORD cannum;
-            std::mutex mutexCanObjs;
-            std::vector<VCI_CAN_OBJ> mCanObjs;
+            std::mutex mutexParses;
+            std::shared_ptr<std::vector<CanParse>> parses_;
         };
     }
 }

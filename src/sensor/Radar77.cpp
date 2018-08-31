@@ -24,10 +24,6 @@ namespace PIAUTO {
             delete attri;
         }
 
-        std::shared_ptr<std::vector<VCI_CAN_OBJ>> Radar_77::GetRadar77Objs() {
-          return ct->GetVCICanObjs();
-        }
-
         bool Radar_77::UpdateAttributes(VCI_CAN_OBJ &frame) {
             std::thread::id update_attributes_id = std::this_thread::get_id();
             cout << "[" << __func__ << "] in thread(" << update_attributes_id << ")     0x" << std::hex << frame.ID << endl;
