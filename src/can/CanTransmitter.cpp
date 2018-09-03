@@ -217,13 +217,10 @@ namespace PIAUTO {
           parsesLock.unlock();
         }
 
-        void CanTransmitter::unregisterCallbacks(CanParse &parse) {
+        void CanTransmitter::unregisterCallbacks(unsigned int &index) {
             std::unique_lock<std::mutex> parsesLock(mutexParses);
-            for (int i = 0; i < parses_.size(); i++) {
-                if (parse == parses_[i]) {
-                    parses_.erase(parses_.begin() + i);
-                    break;
-                }
+            if (parses_->size() > 0 && index < parses_->size()) {
+              parses_->erase(parses_->begin() + index);
             }
             parsesLock.unlock();
         }

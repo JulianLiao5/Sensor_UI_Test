@@ -244,7 +244,7 @@ namespace PIAUTO {
             };
 
             void registerCallbacks(CanParse &canParse);
-            void unregisterCallbacks(CanParse &canParse);
+            void unregisterCallbacks(unsigned int &index);
 
         private:
             std::thread *monitor_Thread;
