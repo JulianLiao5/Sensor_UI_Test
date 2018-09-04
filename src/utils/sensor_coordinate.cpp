@@ -8,7 +8,7 @@ namespace PIAUTO {
     namespace sensor {
 
         SensorCoordinate::SensorCoordinate() {
-            world_to_map_radar[0] << 1.0, 0.0, 0.8,
+            world_to_map_radar[0] << 1.0, 0.0, 0.0,
                     0.0, 1.0, 0.0,
                     0.0, 0.0, 1.0;
 

@@ -73,7 +73,15 @@ int main(int argc, char *argv[]) {
     OGM->DrawRectInMap(Rect(4, 0, 0.2, 0.11), CellStatus::UNKNOWN);
     OGM->DrawRectInMap(Rect(0, 0, 0.4, 0.22), CellStatus::UNKNOWN);
     OGM->DrawRectInMap(Rect(5, 0, 0.4, 0.22), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(6, 0, 0.2, 0.11), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(7, 0, 0.2, 0.11), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(8, 0, 0.2, 0.11), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(9, 0, 0.2, 0.11), CellStatus::UNKNOWN);
     OGM->DrawRectInMap(Rect(10, 0, 0.4, 0.22), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(11, 0, 0.2, 0.11), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(12, 0, 0.2, 0.11), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(13, 0, 0.2, 0.11), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(14, 0, 0.2, 0.11), CellStatus::UNKNOWN);
     OGM->DrawRectInMap(Rect(15, 0, 0.4, 0.22), CellStatus::UNKNOWN);
     OGM->DrawRectInMap(Rect(20, 0, 0.4, 0.22), CellStatus::UNKNOWN);
     OGM->DrawRectInMap(Rect(16, 0, 0.2, 0.11), CellStatus::UNKNOWN);
@@ -109,17 +117,17 @@ int main(int argc, char *argv[]) {
                       std::cout << ">= 3.0 && < 4.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 0
+              #if 1
               if (object_temp.Range >= 4.0 && object_temp.Range < 5.0) {
                       std::cout << ">= 4.0 && < 5.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 0
+              #if 1
               if (object_temp.Range >= 5.0 && object_temp.Range < 6.0) {
                       std::cout << ">= 5.0 && < 6.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 0
+              #if 1
               if (object_temp.Range >= 6.0 && object_temp.Range < 7.0) {
                       std::cout << ">= 6.0 && < 7.0  --  " << object_temp << std::endl;
               }
