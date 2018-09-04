@@ -90,6 +90,11 @@ namespace PIAUTO {
 
         template<typename T>
         int CircleBuffer<T>::DataLength() {
+            /*if (tail >= head) {
+                return tail - head;
+            } else {
+                return tail + bufSize - head;
+            }*/
             return bufSize;
         }
 
@@ -123,14 +128,25 @@ namespace PIAUTO {
                 return false;
             }
 
-            for (int i = _len - 1; i >= 0; --i) {
-                if (--tail < 0) {
-                    tail = 0;
-                    printf("get data too much, no enough data!\n");
-                    return false;
+            #if 0
+                auto temp_tail = tail - 1;
+                for (int i = _len - 1; i >= 0; --i) {
+                    if (temp_tail < 0) {
+                        temp_tail += bufSize;
+                    }
+                    _buf[i] = buf[temp_tail];
+                    --temp_tail;
                 }
-                _buf[i] = buf[tail];
-            }
+            #else
+                for (int i = _len - 1; i >= 0; --i) {
+                    if (--tail < 0) {
+                      tail = 0;
+                      printf("get data too much, no enough data!\n");
+                      return false;
+                    }
+                    _buf[i] = buf[tail];
+                }
+            #endif
             return true;
         }
 

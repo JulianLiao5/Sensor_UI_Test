@@ -16,7 +16,7 @@ namespace PIAUTO {
             return os;
         }
 
-        Radar_77::Radar_77(int id, CanTransmitter *c) : CanNode("radar.txt"), ID(id), ct(c), objs(64), radar_buffer(20) {
+        Radar_77::Radar_77(int id, CanTransmitter *c) : CanNode("radar.txt"), ID(id), ct(c), objs(64), radar_buffer(DEFAULT_BUFFER_SIZE) {
             attri = new Radar_77Attributes();
         }
 

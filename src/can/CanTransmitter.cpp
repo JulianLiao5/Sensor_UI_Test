@@ -32,6 +32,8 @@ namespace PIAUTO {
 
             Init(code, mask, filterType, mode, timing0, timing1);
 
+            parses_ = std::make_shared<std::vector<CanParse>>();
+
             m_connect = true;
 
             ReceiveThread = new thread(&CanTransmitter::ReceiveData, this);
@@ -197,8 +199,12 @@ namespace PIAUTO {
                         printf("[%s], len: %d\n", __func__, len);
                         std::unique_lock<std::mutex> parsesLock(mutexParses);
                         for (unsigned int i = 0; i < len; i++) {
-                            for (CanParse parse : *(parses_)) {
-                              parse(vciCanObj[i]);
+                            if (parses_ != nullptr) {
+                              for (CanParse parse : *(parses_)) {
+                                  parse(vciCanObj[i]);
+                              }
+                            } else {
+                                printf("NO callback registered, waiting...!\n");
                             }
                         }
                         parsesLock.unlock();
@@ -212,8 +218,14 @@ namespace PIAUTO {
 
 
         void CanTransmitter::registerCallbacks(CanParse &parse) {
+          std::thread::id register_id = std::this_thread::get_id();
           std::unique_lock<std::mutex> parsesLock(mutexParses);
-          parses_->push_back(parse);
+          if (parses_ != nullptr) {
+              parses_->push_back(parse);
+              cout << "[" << __func__ << "] in thread(" << register_id << "), parses_->size(): " << parses_->size() << endl;
+          } else {
+              printf("parses_ is NOT initialized!\n");
+          }
           parsesLock.unlock();
         }
 

@@ -6,6 +6,7 @@
  ************************************************************************/
 
 #include<functional>
+#include <math.h>
 #include<iostream>
 
 #include <opencv2/core.hpp>
@@ -28,9 +29,9 @@ int main(int argc, char *argv[]) {
   }
 
   // radar data buffer
-  std::vector<PIAUTO::chassis::ObjectInfo_77> radarObjs[RADAR77_NUM][20];
+  std::vector<PIAUTO::chassis::ObjectInfo_77> radarObjs[RADAR77_NUM][DEFAULT_BUFFER_SIZE];
 
-  cv::Size map_size(800, 800);
+  cv::Size map_size(1000, 1000);
   double size_per_pixel = 0.05;
   OccupancyStatusGridMap *OGM = new OccupancyStatusGridMap(size_per_pixel, map_size);
 
@@ -41,10 +42,6 @@ int main(int argc, char *argv[]) {
     cv::resize(temp_car, car, cv::Size(), scale, scale, cv::INTER_LINEAR);
   }
 
-  if (car.data == nullptr) {
-    OGM->DrawRectInMap(Rect(0, 0, 1, 1.6));
-  }
-
   PIAUTO::sensor::SensorCoordinate _sc;
 
   while (1) {
@@ -53,10 +50,14 @@ int main(int argc, char *argv[]) {
 
     OGM->Reset();
 
-    OGM->DrawLineInMap(cv::Point2d(0, 20), cv::Point2d(0, -20), CellStatus::UNKNOWN);
-    OGM->DrawLineInMap(cv::Point2d(-20, 0), cv::Point2d(20, 0), CellStatus::UNKNOWN);
-    OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(20, 20), CellStatus::UNKNOWN);
-    OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(20, -20), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(0, 25), cv::Point2d(0, -25), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(-25, 0), cv::Point2d(25, 0), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(25, 25), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(25, -25), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(25, 25 * tan(30 * M_PI / 180)), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(25, -25 * tan(30 * M_PI / 180)), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(25 / tan(60 * M_PI / 180), 25), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(25 / tan(60 * M_PI / 180), -25), CellStatus::UNKNOWN);
 
     for (int i = -2; i <= 16; i += 3) {
       for (int j = -6; j <= 6; j += 4) {
@@ -64,20 +65,29 @@ int main(int argc, char *argv[]) {
       }
     }
 
-    OGM->DrawRectInMap(Rect(0, 0, 0.2, 0.11), CellStatus::UNKNOWN);
-    OGM->DrawRectInMap(Rect(5, 0, 0.2, 0.11), CellStatus::UNKNOWN);
-    OGM->DrawRectInMap(Rect(10, 0, 0.2, 0.11), CellStatus::UNKNOWN);
-    OGM->DrawRectInMap(Rect(15, 0, 0.2, 0.11), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(1, 0, 0.2, 0.11), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(2, 0, 0.2, 0.11), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(3, 0, 0.2, 0.11), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(4, 0, 0.2, 0.11), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(0, 0, 0.4, 0.22), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(5, 0, 0.4, 0.22), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(10, 0, 0.4, 0.22), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(15, 0, 0.4, 0.22), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(20, 0, 0.4, 0.22), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(16, 0, 0.2, 0.11), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(17, 0, 0.2, 0.11), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(18, 0, 0.2, 0.11), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(19, 0, 0.2, 0.11), CellStatus::UNKNOWN);
 
     for (int i = 0; i != RADAR77_NUM; ++i) {
-      radars[i]->GetObjectInfoByTimes(radarObjs[i], 20);
-      for (int j = 0; j != 20; ++j) {
-        if (radarObjs[i][j].size() > 0) {
+      radars[i]->GetObjectInfoByTimes(radarObjs[i], DEFAULT_BUFFER_SIZE);
+      for (int j = 0; j != DEFAULT_BUFFER_SIZE; ++j) {
+        if (radarObjs[i][j].size() > 0 && radarObjs[i][j].size() <= 64) {
           printf("radarObjs[%d][%d].size: %ld\n", i, j, radarObjs[i][j].size());
-        }
-        for (auto &object_temp : radarObjs[i][j]) {
-          Eigen::Vector3d coordinate = _sc.Radar77Obj2Coordinate(object_temp, i);
-          OGM->DrawRectInMap(Rect(coordinate.x(), coordinate.y(), 0.5, 0.11));
+          for (auto &object_temp : radarObjs[i][j]) {
+            Eigen::Vector3d coordinate = _sc.Radar77Obj2Coordinate(object_temp, i);
+            OGM->DrawRectInMap(Rect(coordinate.x(), coordinate.y(), 0.5, 0.11));
+          }
         }
         radarObjs[i][j].clear();
       }
@@ -85,14 +95,18 @@ int main(int argc, char *argv[]) {
 
     cv::Mat m = OGM->Visualize();
     // cv::namedWindow("map", cv::WINDOW_NORMAL);
-    if (car.data != nullptr) {
+    /* if (car.data != nullptr) {
       cv::Rect roi_rect(OGM->grid_size().width / 2 - car.cols / 2, OGM->grid_size().height / 2 - car.rows / 2, car.cols, car.rows);
       car.copyTo(m(roi_rect));
-    }
+    } else {
+      OGM->DrawRectInMap(Rect(0, 0, 1, 1.6));
+    } */
     cv::imshow("map", m);
     if ('q' == cv::waitKey(20)) {
         break;
     }
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
 
   return 0;
