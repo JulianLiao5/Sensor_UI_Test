@@ -141,7 +141,9 @@ namespace PIAUTO {
                 for (int i = _len - 1; i >= 0; --i) {
                     if (--tail < 0) {
                       tail = 0;
+                      #if 0
                       printf("get data too much, no enough data!\n");
+                      #endif
                       return false;
                     }
                     _buf[i] = buf[tail];

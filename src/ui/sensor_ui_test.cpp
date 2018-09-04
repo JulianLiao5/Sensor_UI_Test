@@ -45,8 +45,10 @@ int main(int argc, char *argv[]) {
   PIAUTO::sensor::SensorCoordinate _sc;
 
   while (1) {
+    #if DEBUG
     std::thread::id main_id = std::this_thread::get_id();
     cout << "[" << __func__ << "] in thread(" << main_id << ")" << endl;
+    #endif
 
     OGM->Reset();
 
@@ -83,8 +85,92 @@ int main(int argc, char *argv[]) {
       radars[i]->GetObjectInfoByTimes(radarObjs[i], DEFAULT_BUFFER_SIZE);
       for (int j = 0; j != DEFAULT_BUFFER_SIZE; ++j) {
         if (radarObjs[i][j].size() > 0 && radarObjs[i][j].size() <= 64) {
+          #if DEBUG
           printf("radarObjs[%d][%d].size: %ld\n", i, j, radarObjs[i][j].size());
+          #endif
           for (auto &object_temp : radarObjs[i][j]) {
+              #if 0
+              if (object_temp.Range < 1.0) {
+                      std::cout << "< 1.0  --  " << object_temp << std::endl;
+              }
+              #endif
+              #if 0
+              if (object_temp.Range >= 1.0 && object_temp.Range < 2.0) {
+                      std::cout << ">= 1.0 && < 2.0  --  " << object_temp << std::endl;
+              }
+              #endif
+              #if 0
+              if (object_temp.Range >= 2.0 && object_temp.Range < 3.0) {
+                      std::cout << ">= 2.0 && < 3.0  --  " << object_temp << std::endl;
+              }
+              #endif
+              #if 0
+              if (object_temp.Range >= 3.0 && object_temp.Range < 4.0) {
+                      std::cout << ">= 3.0 && < 4.0  --  " << object_temp << std::endl;
+              }
+              #endif
+              #if 0
+              if (object_temp.Range >= 4.0 && object_temp.Range < 5.0) {
+                      std::cout << ">= 4.0 && < 5.0  --  " << object_temp << std::endl;
+              }
+              #endif
+              #if 0
+              if (object_temp.Range >= 5.0 && object_temp.Range < 6.0) {
+                      std::cout << ">= 5.0 && < 6.0  --  " << object_temp << std::endl;
+              }
+              #endif
+              #if 0
+              if (object_temp.Range >= 6.0 && object_temp.Range < 7.0) {
+                      std::cout << ">= 6.0 && < 7.0  --  " << object_temp << std::endl;
+              }
+              #endif
+              #if 0
+              if (object_temp.Range >= 7.0 && object_temp.Range < 8.0) {
+                      std::cout << ">= 7.0 && < 8.0  --  " << object_temp << std::endl;
+              }
+              #endif
+              #if 0
+              if (object_temp.Range >= 8.0 && object_temp.Range < 9.0) {
+                      std::cout << ">= 8.0 && < 9.0  --  " << object_temp << std::endl;
+              }
+              #endif
+              #if 0
+              if (object_temp.Range >= 9.0 && object_temp.Range < 10.0) {
+                      std::cout << ">= 9.0 && < 10.0  --  " << object_temp << std::endl;
+              }
+              #endif
+              #if 0
+              if (object_temp.Range >= 10.0 && object_temp.Range < 11.0) {
+                      std::cout << ">= 10.0 && < 11.0  --  " << object_temp << std::endl;
+              }
+              #endif
+              #if 0
+              if (object_temp.Range >= 11.0 && object_temp.Range < 12.0) {
+                      std::cout << ">= 11.0 && < 12.0  --  " << object_temp << std::endl;
+              }
+              #endif
+              #if 0
+              if (object_temp.Range >= 12.0 && object_temp.Range < 13.0) {
+                      std::cout << ">= 12.0 && < 13.0  --  " << object_temp << std::endl;
+              }
+              #endif
+              #if 0
+              if (object_temp.Range >= 13.0 && object_temp.Range < 14.0) {
+                      std::cout << ">= 13.0 && < 14.0  --  " << object_temp << std::endl;
+              }
+              #endif
+              #if 0
+              if (object_temp.Range >= 14.0 && object_temp.Range < 15.0) {
+                      std::cout << ">= 14.0 && < 15.0  --  " << object_temp << std::endl;
+              }
+              #endif
+              #if 0
+              if (object_temp.Range >= 15.0 && object_temp.Range < 16.0) {
+                      std::cout << ">= 15.0 && < 16.0  --  " << object_temp << std::endl;
+              }
+              #endif
+
+
             Eigen::Vector3d coordinate = _sc.Radar77Obj2Coordinate(object_temp, i);
             OGM->DrawRectInMap(Rect(coordinate.x(), coordinate.y(), 0.5, 0.11));
           }

@@ -25,20 +25,26 @@ namespace PIAUTO {
         }
 
         bool Radar_77::UpdateAttributes(VCI_CAN_OBJ &frame) {
+            #if DEBUG
             std::thread::id update_attributes_id = std::this_thread::get_id();
             cout << "[" << __func__ << "] in thread(" << update_attributes_id << ")     0x" << std::hex << frame.ID << endl;
+            #endif
             if (frame.ID < static_cast<unsigned int>(0x500 + 0x40 *ID) || frame.ID > static_cast<unsigned int>(0x500 + 0x40 *ID + 0x3f)) {
                 return false;
             }
 
             obj_index = frame.ID - 0x500 - 0x40 *ID;
 
+            #if DEBUG
             cout << Frame2Str(frame).c_str()<<"\n";
+            #endif
             // logFile<< Frame2Str(frame).c_str()<<"\n";
             memcpy(&attri->_500[obj_index], frame.Data, 8);
 
             if (obj_index == 63) {
+                #if DEBUG
                 printf("obj_index is 63!\n");
+                #endif
                 std::unique_lock<std::shared_timed_mutex> lg(_mt);
                 /// all frame received, notify observers
                 objs.clear();
@@ -49,7 +55,9 @@ namespace PIAUTO {
                 for (int i = 0; i < 63; ++i) {
                     if(attri->_500[i].Range == 0)
                         continue;
+                    #if DEBUG
                     printf("i: %d\n", i);
+                    #endif
                     temp.index=i;
 
                     temp.Range = attri->_500[i].Range * 0.01;

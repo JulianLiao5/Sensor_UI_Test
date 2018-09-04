@@ -38,8 +38,8 @@ namespace PIAUTO {
 
             ReceiveThread = new thread(&CanTransmitter::ReceiveData, this);
 
-            usleep(5 * 1000);
-            monitor_Thread = new thread(&CanTransmitter::FrameRateMonitor, this);
+            // usleep(5 * 1000);
+            // monitor_Thread = new thread(&CanTransmitter::FrameRateMonitor, this);
         }
 
         CanTransmitter::~CanTransmitter() {
@@ -169,15 +169,19 @@ namespace PIAUTO {
         }
 
         void CanTransmitter::ReceiveData() {
+            #if DEBUG
             std::thread::id receive_data_id = std::this_thread::get_id();
             cout << "ReceiveData thread(" << receive_data_id << ") begin!" << endl;
+            #endif
             VCI_CAN_OBJ vciCanObj[100];
             VCI_ERR_INFO errInfo{0};
             ULONG len;
             UINT buffLen = 0;
             while (m_connect) {
                 buffLen = VCI_GetReceiveNum(devtype, index, cannum);
+                #if DEBUG
                 printf("[%s], buffLen: %d\n", __func__, buffLen);
+                #endif
                 if (buffLen != 0) {
                     buffLen = std::min(buffLen, 100U);
                     len = VCI_Receive(devtype, index, cannum, vciCanObj, buffLen, 100);
@@ -196,7 +200,9 @@ namespace PIAUTO {
                         SendData(&can);
                     } else {
                         recvFrameNum += len;
+                        #if DEBUG
                         printf("[%s], len: %d\n", __func__, len);
+                        #endif
                         std::unique_lock<std::mutex> parsesLock(mutexParses);
                         for (unsigned int i = 0; i < len; i++) {
                             if (parses_ != nullptr) {
