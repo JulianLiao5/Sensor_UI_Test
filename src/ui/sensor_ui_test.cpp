@@ -8,8 +8,9 @@
 #include<functional>
 #include <math.h>
 #include<iostream>
-
+#include<fstream>
 #include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
 
 #include <utils/sensor_coordinate.h>
 #include <utils/occupancy_status_grid_map.h>
@@ -44,6 +45,9 @@ int main(int argc, char *argv[]) {
 
   PIAUTO::sensor::SensorCoordinate _sc;
 
+  ofstream radar77File;
+  radar77File.open("./radar77_data.txt", ios::out);
+
   while (1) {
     #if DEBUG
     std::thread::id main_id = std::this_thread::get_id();
@@ -54,6 +58,9 @@ int main(int argc, char *argv[]) {
 
     OGM->DrawLineInMap(cv::Point2d(0, 25), cv::Point2d(0, -25), CellStatus::UNKNOWN);
     OGM->DrawLineInMap(cv::Point2d(-25, 0), cv::Point2d(25, 0), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(5, 25), cv::Point2d(5, -25), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(10, 25), cv::Point2d(10, -25), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(15, 25), cv::Point2d(15, -25), CellStatus::UNKNOWN);
     OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(25, 25), CellStatus::UNKNOWN);
     OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(25, -25), CellStatus::UNKNOWN);
     OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(25, 25 * tan(30 * M_PI / 180)), CellStatus::UNKNOWN);
@@ -96,6 +103,7 @@ int main(int argc, char *argv[]) {
           #if DEBUG
           printf("radarObjs[%d][%d].size: %ld\n", i, j, radarObjs[i][j].size());
           #endif
+          radar77File << "radarObjs[" << i << "][" << j << "].size: " << radarObjs[i][j].size() << std::endl;
           for (auto &object_temp : radarObjs[i][j]) {
               #if 0
               if (object_temp.Range < 1.0) {
@@ -117,64 +125,99 @@ int main(int argc, char *argv[]) {
                       std::cout << ">= 3.0 && < 4.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 1
+              #if 0
               if (object_temp.Range >= 4.0 && object_temp.Range < 5.0) {
-                      std::cout << ">= 4.0 && < 5.0  --  " << object_temp << std::endl;
+                  if ((object_temp.Azimuth >= 0.0 && object_temp.Azimuth <= 10.0)
+                      || (object_temp.Azimuth >= -10.0 && object_temp.Azimuth <= 0.0)) {
+                        radar77File << ">= 4.0 && < 5.0 | -10.0 - +10.0  --  " << object_temp << std::endl;
+                      } else {
+                        radar77File << ">= 4.0 && < 5.0 | other --  " << object_temp << std::endl;
+                      }
               }
               #endif
               #if 1
               if (object_temp.Range >= 5.0 && object_temp.Range < 6.0) {
-                      std::cout << ">= 5.0 && < 6.0  --  " << object_temp << std::endl;
+                    radar77File << ">= 5.0 && < 6.0  --  " << object_temp << std::endl;
               }
               #endif
               #if 1
               if (object_temp.Range >= 6.0 && object_temp.Range < 7.0) {
-                      std::cout << ">= 6.0 && < 7.0  --  " << object_temp << std::endl;
+                    radar77File << ">= 6.0 && < 7.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 0
+              #if 1
               if (object_temp.Range >= 7.0 && object_temp.Range < 8.0) {
-                      std::cout << ">= 7.0 && < 8.0  --  " << object_temp << std::endl;
+                    radar77File << ">= 7.0 && < 8.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 0
+              #if 1
               if (object_temp.Range >= 8.0 && object_temp.Range < 9.0) {
-                      std::cout << ">= 8.0 && < 9.0  --  " << object_temp << std::endl;
+                      radar77File << ">= 8.0 && < 9.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 0
+              #if 1
               if (object_temp.Range >= 9.0 && object_temp.Range < 10.0) {
-                      std::cout << ">= 9.0 && < 10.0  --  " << object_temp << std::endl;
+                      radar77File << ">= 9.0 && < 10.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 0
+              #if 1
               if (object_temp.Range >= 10.0 && object_temp.Range < 11.0) {
-                      std::cout << ">= 10.0 && < 11.0  --  " << object_temp << std::endl;
+                      radar77File << ">= 10.0 && < 11.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 0
+              #if 1
               if (object_temp.Range >= 11.0 && object_temp.Range < 12.0) {
-                      std::cout << ">= 11.0 && < 12.0  --  " << object_temp << std::endl;
+                      radar77File << ">= 11.0 && < 12.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 0
+              #if 1
               if (object_temp.Range >= 12.0 && object_temp.Range < 13.0) {
-                      std::cout << ">= 12.0 && < 13.0  --  " << object_temp << std::endl;
+                      radar77File << ">= 12.0 && < 13.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 0
+              #if 1
               if (object_temp.Range >= 13.0 && object_temp.Range < 14.0) {
-                      std::cout << ">= 13.0 && < 14.0  --  " << object_temp << std::endl;
+                     radar77File << ">= 13.0 && < 14.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 0
+              #if 1
               if (object_temp.Range >= 14.0 && object_temp.Range < 15.0) {
-                      std::cout << ">= 14.0 && < 15.0  --  " << object_temp << std::endl;
+                      radar77File << ">= 14.0 && < 15.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 0
+              #if 1
               if (object_temp.Range >= 15.0 && object_temp.Range < 16.0) {
-                      std::cout << ">= 15.0 && < 16.0  --  " << object_temp << std::endl;
+                      radar77File << ">= 15.0 && < 16.0  --  " << object_temp << std::endl;
+              }
+              #endif
+              #if 1
+              if (object_temp.Range >= 16.0 && object_temp.Range < 17.0) {
+                      radar77File << ">= 16.0 && < 17.0  --  " << object_temp << std::endl;
+              }
+              #endif
+              #if 1
+              if (object_temp.Range >= 17.0 && object_temp.Range < 18.0) {
+                      radar77File << ">= 17.0 && < 18.0  --  " << object_temp << std::endl;
+              }
+              #endif
+              #if 1
+              if (object_temp.Range >= 18.0 && object_temp.Range < 19.0) {
+                      radar77File << ">= 18.0 && < 19.0  --  " << object_temp << std::endl;
+              }
+              #endif
+              #if 1
+              if (object_temp.Range >= 19.0 && object_temp.Range < 20.0) {
+                      radar77File << ">= 19.0 && < 20.0  --  " << object_temp << std::endl;
+              }
+              #endif
+              #if 1
+              if (object_temp.Range >= 20.0 && object_temp.Range < 21.0) {
+                      radar77File << ">= 20.0 && < 21.0  --  " << object_temp << std::endl;
+              }
+              #endif
+              #if 1
+              if (object_temp.Range >= 21.0 && object_temp.Range < 22.0) {
+                      radar77File << ">= 21.0 && < 22.0  --  " << object_temp << std::endl;
               }
               #endif
 
@@ -188,6 +231,8 @@ int main(int argc, char *argv[]) {
     }
 
     cv::Mat m = OGM->Visualize();
+    cv::QtFont font = cv::fontQt("Times");
+    cv::addText(m, "Hello World !", cv::Point(50,50), font);
     // cv::namedWindow("map", cv::WINDOW_NORMAL);
     /* if (car.data != nullptr) {
       cv::Rect roi_rect(OGM->grid_size().width / 2 - car.cols / 2, OGM->grid_size().height / 2 - car.rows / 2, car.cols, car.rows);
@@ -202,6 +247,7 @@ int main(int argc, char *argv[]) {
 
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
+  radar77File.close();
 
   return 0;
 }
