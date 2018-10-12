@@ -22,7 +22,7 @@ using namespace std;
 
 int main(int argc, char *argv[]) {
   PIAUTO::chassis::Radar_77 *radars[RADAR77_NUM];
-  PIAUTO::chassis::CanTransmitter ct(VCI_USBCAN2, 0, 0, 0, 0, 0, 0, TIME_0, TIME_1);
+  PIAUTO::chassis::CanTransmitter ct(VCI_USBCAN2, 0, 1, 0, 0, 0, 0, TIME_0, TIME_1);
   for (int i = 0; i < RADAR77_NUM; i++) {
       radars[i] = new PIAUTO::chassis::Radar_77(i, &ct);
       PIAUTO::chassis::CanTransmitter::CanParse radarParse = std::bind(&PIAUTO::chassis::Radar_77::UpdateAttributes, radars[i], std::placeholders::_1);
@@ -32,8 +32,8 @@ int main(int argc, char *argv[]) {
   // radar data buffer
   std::vector<PIAUTO::chassis::ObjectInfo_77> radarObjs[RADAR77_NUM][DEFAULT_BUFFER_SIZE];
 
-  cv::Size map_size(1000, 1000);
-  double size_per_pixel = 0.05;
+  cv::Size map_size(1200, 1200);
+  double size_per_pixel = 0.01;
   OccupancyStatusGridMap *OGM = new OccupancyStatusGridMap(size_per_pixel, map_size);
 
   cv::Mat car;
@@ -56,32 +56,36 @@ int main(int argc, char *argv[]) {
 
     OGM->Reset();
 
-    OGM->DrawLineInMap(cv::Point2d(0, 25), cv::Point2d(0, -25), CellStatus::UNKNOWN);
-    OGM->DrawLineInMap(cv::Point2d(-25, 0), cv::Point2d(25, 0), CellStatus::UNKNOWN);
-    OGM->DrawLineInMap(cv::Point2d(5, 25), cv::Point2d(5, -25), CellStatus::UNKNOWN);
-    OGM->DrawLineInMap(cv::Point2d(10, 25), cv::Point2d(10, -25), CellStatus::UNKNOWN);
-    OGM->DrawLineInMap(cv::Point2d(15, 25), cv::Point2d(15, -25), CellStatus::UNKNOWN);
-    OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(25, 25), CellStatus::UNKNOWN);
-    OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(25, -25), CellStatus::UNKNOWN);
-    OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(25, 25 * tan(30 * M_PI / 180)), CellStatus::UNKNOWN);
-    OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(25, -25 * tan(30 * M_PI / 180)), CellStatus::UNKNOWN);
-    OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(25 / tan(60 * M_PI / 180), 25), CellStatus::UNKNOWN);
-    OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(25 / tan(60 * M_PI / 180), -25), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(0, 6), cv::Point2d(0, -6), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(-6, 0), cv::Point2d(6, 0), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(1, -6), cv::Point2d(1, 6), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(2, -6), cv::Point2d(2, 6), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(3, -6), cv::Point2d(3, 6), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(4, -6), cv::Point2d(4, 6), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(5, -6), cv::Point2d(5, 6), CellStatus::UNKNOWN);
+   // OGM->DrawLineInMap(cv::Point2d(10, 25), cv::Point2d(10, -25), CellStatus::UNKNOWN);
+   // OGM->DrawLineInMap(cv::Point2d(15, 25), cv::Point2d(15, -25), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(6, 6), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(6, -6), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(6, 6 * tan(30 * M_PI / 180)), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(6, -6 * tan(30 * M_PI / 180)), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(6 / tan(60 * M_PI / 180), 6), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(6 / tan(60 * M_PI / 180), -6), CellStatus::UNKNOWN);
 
-    for (int i = -2; i <= 16; i += 3) {
-      for (int j = -6; j <= 6; j += 4) {
-        OGM->DrawRectInMap(Rect(i, j, 0.11, 2), CellStatus::UNKNOWN);
+    for (int i = 0; i <= 5; i += 2) {
+      for (int j = -2; j <= 2; j += 1) {
+        OGM->DrawRectInMap(Rect(i, j, 0.07, 0.8), CellStatus::UNKNOWN);
       }
     }
 
-    OGM->DrawRectInMap(Rect(1, 0, 0.2, 0.11), CellStatus::UNKNOWN);
-    OGM->DrawRectInMap(Rect(2, 0, 0.2, 0.11), CellStatus::UNKNOWN);
-    OGM->DrawRectInMap(Rect(3, 0, 0.2, 0.11), CellStatus::UNKNOWN);
-    OGM->DrawRectInMap(Rect(4, 0, 0.2, 0.11), CellStatus::UNKNOWN);
-    OGM->DrawRectInMap(Rect(0, 0, 0.4, 0.22), CellStatus::UNKNOWN);
-    OGM->DrawRectInMap(Rect(5, 0, 0.4, 0.22), CellStatus::UNKNOWN);
-    OGM->DrawRectInMap(Rect(6, 0, 0.2, 0.11), CellStatus::UNKNOWN);
-    OGM->DrawRectInMap(Rect(7, 0, 0.2, 0.11), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(1, 0, 0.2, 0.07), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(2, 0, 0.2, 0.07), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(3, 0, 0.2, 0.07), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(4, 0, 0.2, 0.07), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(0, 0, 0.4, 0.14), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(5, 0, 0.4, 0.14), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(6, 0, 0.2, 0.07), CellStatus::UNKNOWN);
+   /*** OGM->DrawRectInMap(Rect(7, 0, 0.2, 0.11), CellStatus::UNKNOWN);
     OGM->DrawRectInMap(Rect(8, 0, 0.2, 0.11), CellStatus::UNKNOWN);
     OGM->DrawRectInMap(Rect(9, 0, 0.2, 0.11), CellStatus::UNKNOWN);
     OGM->DrawRectInMap(Rect(10, 0, 0.4, 0.22), CellStatus::UNKNOWN);
@@ -95,7 +99,7 @@ int main(int argc, char *argv[]) {
     OGM->DrawRectInMap(Rect(17, 0, 0.2, 0.11), CellStatus::UNKNOWN);
     OGM->DrawRectInMap(Rect(18, 0, 0.2, 0.11), CellStatus::UNKNOWN);
     OGM->DrawRectInMap(Rect(19, 0, 0.2, 0.11), CellStatus::UNKNOWN);
-
+***/
     for (int i = 0; i != RADAR77_NUM; ++i) {
       radars[i]->GetObjectInfoByTimes(radarObjs[i], DEFAULT_BUFFER_SIZE);
       for (int j = 0; j != DEFAULT_BUFFER_SIZE; ++j) {
@@ -234,11 +238,12 @@ int main(int argc, char *argv[]) {
     // cv::namedWindow("map", cv::WINDOW_NORMAL);
     cv::namedWindow("map", cv::WINDOW_AUTOSIZE);
     cv::QtFont font = cv::fontQt("Times");
-    cv::addText(m, "0", cv::Point(504,498), font);
-    cv::addText(m, "5", cv::Point(504,398), font);
-    cv::addText(m, "10", cv::Point(504,298), font);
-    cv::addText(m, "15", cv::Point(504,198), font);
-    cv::addText(m, "20", cv::Point(504,98), font);
+    cv::addText(m, "0", cv::Point(604,598), font);
+    cv::addText(m, "1", cv::Point(604,498), font);
+    cv::addText(m, "2", cv::Point(604,398), font);
+    cv::addText(m, "3", cv::Point(604,298), font);
+    cv::addText(m, "4", cv::Point(604,198), font);
+    cv::addText(m, "5", cv::Point(604,98), font);
     cv::addText(m, "-30deg", cv::Point(260,42), font);
     cv::addText(m, "-45deg", cv::Point(90,52), font);
     cv::addText(m, "30deg", cv::Point(740,42), font);
