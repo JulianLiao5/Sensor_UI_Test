@@ -144,8 +144,14 @@ namespace PIAUTO {
             #else
                 for (int i = _len - 1; i >= 0; --i) {
                     if (--tail < 0) {
-                      tail += bufSize;
-                      head = 0;
+                        if (1 == head) {    // tail = 0 and head = 1 means "Data is full"
+                            tail += bufSize;
+                            head = 0;
+                        } else if (0 == head) {  // tail = 0 and head = 0 means "Data is empty"
+                            tail = 0;
+                            LOG(ERROR) << "No data, the CircleBuffer is empty!";
+                            return false;
+                        }
                     }
                     _buf[i] = buf[tail];
                 }
