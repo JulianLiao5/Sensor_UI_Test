@@ -122,13 +122,17 @@ namespace PIAUTO {
 
         template<typename T>
         bool CircleBuffer<T>::GetData(T *_buf, int _len) {
+            if (0 == head && 0 == tail) {
+                LOG(ERROR) << "No data, the CircleBuffer is empty!";
+                return false;
+            }
             int dataLen = DataLength();
             if (_len > dataLen) {
                 LOG(ERROR) << "get data too much: " << _len << " " << dataLen;
                 return false;
             }
 
-            #if 1
+            #if 0
                 auto temp_tail = tail - 1;
                 for (int i = _len - 1; i >= 0; --i) {
                     if (temp_tail < 0) {
@@ -140,11 +144,8 @@ namespace PIAUTO {
             #else
                 for (int i = _len - 1; i >= 0; --i) {
                     if (--tail < 0) {
-                      tail = 0;
-                      #if 0
-                      printf("get data too much, no enough data!\n");
-                      #endif
-                      return false;
+                      tail += bufSize;
+                      head = 0;
                     }
                     _buf[i] = buf[tail];
                 }

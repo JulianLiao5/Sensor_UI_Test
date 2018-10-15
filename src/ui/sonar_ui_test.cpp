@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
     OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(5, -5 * tan(30 * M_PI / 180)), CellStatus::UNKNOWN);
 
     for (int i = 0; i <= 5; i += 2) {
-      for (int j = -2; j <= 2; j += 1) {
+      for (int j = -3; j <= 3; j += 1) {
         OGM->DrawRectInMap(Rect(i, j, 0.07, 0.8), CellStatus::UNKNOWN);
       }
     }
@@ -79,8 +79,8 @@ int main(int argc, char *argv[]) {
     sonar->GetObjectInfoByTimes(sonarObjs, DEFAULT_SONAR_BUFFER_SIZE);
     for (int j = 0; j != DEFAULT_SONAR_BUFFER_SIZE; ++j) {
         printf("j: %d, FB[left_front] object distance: %f, FC[right_front] object distance: %f\n", j, sonarObjs[j].left_front / 1000.0f, sonarObjs[j].right_front / 1000.0f);
-        OGM->DrawRectInMap(Rect(sonarObjs[j].left_front / 1000.0f, -1.0, 0.2, 0.07));
-        OGM->DrawRectInMap(Rect(sonarObjs[j].right_front / 1000.0f, 1.0, 0.2, 0.07));
+        OGM->DrawRectInMap(Rect(sonarObjs[j].left_front / 1000.0f, 1.0, 0.2, 0.07));
+        OGM->DrawRectInMap(Rect(sonarObjs[j].right_front / 1000.0f, -1.0, 0.2, 0.07));
     }
     printf("------------------------------------------\n");
 
@@ -93,6 +93,12 @@ int main(int argc, char *argv[]) {
     cv::addText(m, "2", cv::Point(504,298), font);
     cv::addText(m, "3", cv::Point(504,198), font);
     cv::addText(m, "4", cv::Point(504,98), font);
+    cv::addText(m, "-3", cv::Point(204,504), font);
+    cv::addText(m, "-2", cv::Point(304,504), font);
+    cv::addText(m, "-1", cv::Point(404,504), font);
+    cv::addText(m, "1", cv::Point(604,504), font);
+    cv::addText(m, "2", cv::Point(704,504), font);
+    cv::addText(m, "3", cv::Point(804,504), font);
     cv::addText(m, "-30deg", cv::Point(260,42), font);
     cv::addText(m, "-45deg", cv::Point(90,52), font);
     cv::addText(m, "30deg", cv::Point(740,42), font);
