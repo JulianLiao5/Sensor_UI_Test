@@ -52,7 +52,7 @@ namespace PIAUTO {
             if (index == 1) {
                 // #if DEBUG_SONAR
                 #if 0
-                printf("index is 0!\n");
+                printf("index is 1!\n");
                 #endif
 
                 SonarData objs = {
