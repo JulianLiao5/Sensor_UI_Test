@@ -21,7 +21,7 @@ using namespace std;
 #define TIME_1    0x1C
 
 int main(int argc, char *argv[]) {
-  PIAUTO::chassis::CanTransmitter ct(VCI_USBCAN2, 0, 1, 0, 0, 0, 0, TIME_0, TIME_1);
+  PIAUTO::chassis::CanTransmitter ct(VCI_USBCAN2, 0, 0, 0, 0, 0, 0, TIME_0, TIME_1);
   PIAUTO::chassis::UltraSonicRadar* sonar = new PIAUTO::chassis::UltraSonicRadar(&ct);
   PIAUTO::chassis::CanTransmitter::CanParse sonarParse = std::bind(&PIAUTO::chassis::UltraSonicRadar::UpdateAttributes, sonar, std::placeholders::_1);
   ct.registerCallbacks(sonarParse);
@@ -79,8 +79,8 @@ int main(int argc, char *argv[]) {
     sonar->GetObjectInfoByTimes(sonarObjs, DEFAULT_SONAR_BUFFER_SIZE);
     for (int j = 0; j != DEFAULT_SONAR_BUFFER_SIZE; ++j) {
         printf("j: %d, FB[left_front] object distance: %f, FC[right_front] object distance: %f\n", j, sonarObjs[j].left_front / 1000.0f, sonarObjs[j].right_front / 1000.0f);
-        OGM->DrawRectInMap(Rect(sonarObjs[j].left_front / 1000.0f, -1.0, 0.5, 0.11));
-        OGM->DrawRectInMap(Rect(sonarObjs[j].right_front / 1000.0f, 1.0, 0.5, 0.11));
+        OGM->DrawRectInMap(Rect(sonarObjs[j].left_front / 1000.0f, -1.0, 0.2, 0.07));
+        OGM->DrawRectInMap(Rect(sonarObjs[j].right_front / 1000.0f, 1.0, 0.2, 0.07));
     }
     printf("------------------------------------------\n");
 

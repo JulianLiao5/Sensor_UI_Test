@@ -128,7 +128,7 @@ namespace PIAUTO {
                 return false;
             }
 
-            #if 0
+            #if 1
                 auto temp_tail = tail - 1;
                 for (int i = _len - 1; i >= 0; --i) {
                     if (temp_tail < 0) {
