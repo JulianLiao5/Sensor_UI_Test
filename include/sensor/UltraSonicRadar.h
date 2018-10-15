@@ -16,7 +16,7 @@ namespace PIAUTO {
         #define USRADAR_NUM    8
         #define DEFAULT_SONAR_BUFFER_SIZE    10    // 10 means 10 * 100ms = 1000ms
         #define TIME_INTERVAL_800 150
-        #define DEBUG_SONAR true
+        #define DEBUG_SONAR false
 
         ///Ultrasonic radar frame analytical structure
         struct record800 {

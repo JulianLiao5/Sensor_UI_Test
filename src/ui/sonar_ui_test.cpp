@@ -49,8 +49,8 @@ int main(int argc, char *argv[]) {
     cv::resize(temp_car, car, cv::Size(), scale, scale, cv::INTER_LINEAR);
   }
 
-  ofstream radar77File;
-  radar77File.open("./radar77_data.txt", ios::out);
+  ofstream sonarFile;
+  sonarFile.open("./sonar_data.txt", ios::out);
 
   while (1) {
     #if DEBUG
@@ -87,11 +87,12 @@ int main(int argc, char *argv[]) {
 
     sonar->GetObjectInfoByTimes(sonarObjs, DEFAULT_SONAR_BUFFER_SIZE);
     for (int j = 0; j != DEFAULT_SONAR_BUFFER_SIZE; ++j) {
+        #if DEBUG
         printf("j: %d, FB[left_front] object distance: %f, FC[right_front] object distance: %f\n", j, sonarObjs[j].left_front / 1000.0f, sonarObjs[j].right_front / 1000.0f);
+        #endif
         OGM->DrawRectInMap(Rect(sonarObjs[j].left_front / 1000.0f, 1.0, 0.2, 0.07));
         OGM->DrawRectInMap(Rect(sonarObjs[j].right_front / 1000.0f, -1.0, 0.2, 0.07));
     }
-    printf("------------------------------------------\n");
 
     cv::Mat m = OGM->Visualize();
     // cv::namedWindow("map", cv::WINDOW_NORMAL);
@@ -126,7 +127,7 @@ int main(int argc, char *argv[]) {
 
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
-  radar77File.close();
+  sonarFile.close();
 
   return 0;
 }

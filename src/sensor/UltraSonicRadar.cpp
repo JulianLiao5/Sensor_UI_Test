@@ -21,8 +21,7 @@ namespace PIAUTO {
         }
 
         bool UltraSonicRadar::UpdateAttributes(VCI_CAN_OBJ &frame) {
-            // #if DEBUG_SONAR
-            #if 0
+            #if DEBUG_SONAR
             std::thread::id update_attributes_id = std::this_thread::get_id();
             cout << "[" << __func__ << "] in thread(" << update_attributes_id << ")     0x" << std::hex << frame.ID << endl;
             #endif
@@ -39,8 +38,8 @@ namespace PIAUTO {
             }
 
             int index = frame.Data[0] + tail_index * 2 - 5;
-            printf("func: %s, line: %d, frame.Data[0]: %d, tail_index: %d, index: %d\n", __func__, __LINE__, frame.Data[0], tail_index, index);
             #if DEBUG_SONAR
+            printf("func: %s, line: %d, frame.Data[0]: %d, tail_index: %d, index: %d\n", __func__, __LINE__, frame.Data[0], tail_index, index);
             cout << Frame2Str(frame).c_str()<<"\n";
             #endif
             // logFile<< Frame2Str(frame).c_str()<<"\n";
@@ -50,8 +49,7 @@ namespace PIAUTO {
             memcpy(&attri->_800[index], frame.Data, 8);
 
             if (index == 1) {
-                // #if DEBUG_SONAR
-                #if 0
+                #if DEBUG_SONAR
                 printf("index is 1!\n");
                 #endif
 
@@ -74,8 +72,7 @@ namespace PIAUTO {
             bool ret = true;
             for (int i = 0; i < USRADAR_NUM; i++) {
                 if (attri->Timer_800[i].GetTime() > TIME_INTERVAL_800) {
-                    // #if DEBUG_SONAR
-                    #if 0
+                    #if DEBUG_SONAR
                     cout << "sonar " << i << ": Frame_800 receive overtime! " << attri->Timer_800[i].GetTime() << endl;
                     #endif
                     LOG(ERROR) << "sonar " << i << ": Frame_800 receive overtime! " << attri->Timer_800[i].GetTime() << endl;
