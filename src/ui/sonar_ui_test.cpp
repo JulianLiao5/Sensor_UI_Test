@@ -27,7 +27,16 @@ int main(int argc, char *argv[]) {
   ct.registerCallbacks(sonarParse);
 
   // sonar data buffer
-  PIAUTO::chassis::SonarData sonarObjs[DEFAULT_SONAR_BUFFER_SIZE];
+    PIAUTO::chassis::SonarData sonarObjs[DEFAULT_SONAR_BUFFER_SIZE] = {{
+        UINT16_MAX,
+        UINT16_MAX,
+        UINT16_MAX,
+        UINT16_MAX,
+        UINT16_MAX,
+        UINT16_MAX,
+        UINT16_MAX,
+        UINT16_MAX
+    }};
 
   cv::Size map_size(1000, 1000);
   double size_per_pixel = 0.01;
