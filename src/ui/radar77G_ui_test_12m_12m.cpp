@@ -227,10 +227,14 @@ int main(int argc, char *argv[]) {
     cv::addText(m, "3", cv::Point(604,298), font);
     cv::addText(m, "4", cv::Point(604,198), font);
     cv::addText(m, "5", cv::Point(604,98), font);
-    cv::addText(m, "-30deg", cv::Point(260,42), font);
-    cv::addText(m, "-45deg", cv::Point(90,52), font);
-    cv::addText(m, "30deg", cv::Point(740,42), font);
-    cv::addText(m, "45deg", cv::Point(910,52), font);
+    cv::addText(m, "-2", cv::Point(380,604), font);
+    cv::addText(m, "-1", cv::Point(480,604), font);
+    cv::addText(m, "1", cv::Point(705,604), font);
+    cv::addText(m, "2", cv::Point(805,604), font);
+    cv::addText(m, "-30deg", cv::Point(300,142), font);
+    cv::addText(m, "-45deg", cv::Point(80,98), font);
+    cv::addText(m, "30deg", cv::Point(860,142), font);
+    cv::addText(m, "45deg", cv::Point(1080,98), font);
     // cv::namedWindow("map", cv::WINDOW_NORMAL);
     /* if (car.data != nullptr) {
       cv::Rect roi_rect(OGM->grid_size().width / 2 - car.cols / 2, OGM->grid_size().height / 2 - car.rows / 2, car.cols, car.rows);
