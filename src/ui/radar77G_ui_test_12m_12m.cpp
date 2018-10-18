@@ -22,7 +22,8 @@ using namespace std;
 
 int main(int argc, char *argv[]) {
   PIAUTO::chassis::Radar_77 *radars[RADAR77_NUM];
-  PIAUTO::chassis::CanTransmitter ct(VCI_USBCAN2, 0, 1, 0, 0, 0, 0, TIME_0, TIME_1);
+  // for the third parameter, if radar connects to "CAN1", then it is 0; if radar connects to "CAN2", then it is 1;
+  PIAUTO::chassis::CanTransmitter ct(VCI_USBCAN2, 0, 0, 0, 0, 0, 0, TIME_0, TIME_1);
   for (int i = 0; i < RADAR77_NUM; i++) {
       radars[i] = new PIAUTO::chassis::Radar_77(i, &ct);
       PIAUTO::chassis::CanTransmitter::CanParse radarParse = std::bind(&PIAUTO::chassis::Radar_77::UpdateAttributes, radars[i], std::placeholders::_1);
@@ -32,6 +33,8 @@ int main(int argc, char *argv[]) {
   // radar data buffer
   std::vector<PIAUTO::chassis::ObjectInfo_77> radarObjs[RADAR77_NUM][DEFAULT_BUFFER_SIZE];
 
+  // x: -6 - 6
+  // y: -6 - 6
   cv::Size map_size(1200, 1200);
   double size_per_pixel = 0.01;
   OccupancyStatusGridMap *OGM = new OccupancyStatusGridMap(size_per_pixel, map_size);
@@ -56,6 +59,7 @@ int main(int argc, char *argv[]) {
 
     OGM->Reset();
 
+    // x: vertical y: horizontal
     OGM->DrawLineInMap(cv::Point2d(0, 6), cv::Point2d(0, -6), CellStatus::UNKNOWN);
     OGM->DrawLineInMap(cv::Point2d(-6, 0), cv::Point2d(6, 0), CellStatus::UNKNOWN);
     OGM->DrawLineInMap(cv::Point2d(1, -6), cv::Point2d(1, 6), CellStatus::UNKNOWN);
@@ -63,8 +67,6 @@ int main(int argc, char *argv[]) {
     OGM->DrawLineInMap(cv::Point2d(3, -6), cv::Point2d(3, 6), CellStatus::UNKNOWN);
     OGM->DrawLineInMap(cv::Point2d(4, -6), cv::Point2d(4, 6), CellStatus::UNKNOWN);
     OGM->DrawLineInMap(cv::Point2d(5, -6), cv::Point2d(5, 6), CellStatus::UNKNOWN);
-   // OGM->DrawLineInMap(cv::Point2d(10, 25), cv::Point2d(10, -25), CellStatus::UNKNOWN);
-   // OGM->DrawLineInMap(cv::Point2d(15, 25), cv::Point2d(15, -25), CellStatus::UNKNOWN);
     OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(6, 6), CellStatus::UNKNOWN);
     OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(6, -6), CellStatus::UNKNOWN);
     OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(6, 6 * tan(30 * M_PI / 180)), CellStatus::UNKNOWN);
@@ -85,21 +87,7 @@ int main(int argc, char *argv[]) {
     OGM->DrawRectInMap(Rect(0, 0, 0.4, 0.14), CellStatus::UNKNOWN);
     OGM->DrawRectInMap(Rect(5, 0, 0.4, 0.14), CellStatus::UNKNOWN);
     OGM->DrawRectInMap(Rect(6, 0, 0.2, 0.07), CellStatus::UNKNOWN);
-   /*** OGM->DrawRectInMap(Rect(7, 0, 0.2, 0.11), CellStatus::UNKNOWN);
-    OGM->DrawRectInMap(Rect(8, 0, 0.2, 0.11), CellStatus::UNKNOWN);
-    OGM->DrawRectInMap(Rect(9, 0, 0.2, 0.11), CellStatus::UNKNOWN);
-    OGM->DrawRectInMap(Rect(10, 0, 0.4, 0.22), CellStatus::UNKNOWN);
-    OGM->DrawRectInMap(Rect(11, 0, 0.2, 0.11), CellStatus::UNKNOWN);
-    OGM->DrawRectInMap(Rect(12, 0, 0.2, 0.11), CellStatus::UNKNOWN);
-    OGM->DrawRectInMap(Rect(13, 0, 0.2, 0.11), CellStatus::UNKNOWN);
-    OGM->DrawRectInMap(Rect(14, 0, 0.2, 0.11), CellStatus::UNKNOWN);
-    OGM->DrawRectInMap(Rect(15, 0, 0.4, 0.22), CellStatus::UNKNOWN);
-    OGM->DrawRectInMap(Rect(20, 0, 0.4, 0.22), CellStatus::UNKNOWN);
-    OGM->DrawRectInMap(Rect(16, 0, 0.2, 0.11), CellStatus::UNKNOWN);
-    OGM->DrawRectInMap(Rect(17, 0, 0.2, 0.11), CellStatus::UNKNOWN);
-    OGM->DrawRectInMap(Rect(18, 0, 0.2, 0.11), CellStatus::UNKNOWN);
-    OGM->DrawRectInMap(Rect(19, 0, 0.2, 0.11), CellStatus::UNKNOWN);
-***/
+
     for (int i = 0; i != RADAR77_NUM; ++i) {
       radars[i]->GetObjectInfoByTimes(radarObjs[i], DEFAULT_BUFFER_SIZE);
       for (int j = 0; j != DEFAULT_BUFFER_SIZE; ++j) {
@@ -109,34 +97,29 @@ int main(int argc, char *argv[]) {
           #endif
           radar77File << "radarObjs[" << i << "][" << j << "].size: " << radarObjs[i][j].size() << std::endl;
           for (auto &object_temp : radarObjs[i][j]) {
-              #if 0
+              #if 1
               if (object_temp.Range < 1.0) {
-                      std::cout << "< 1.0  --  " << object_temp << std::endl;
+                    radar77File << "< 1.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 0
+              #if 1
               if (object_temp.Range >= 1.0 && object_temp.Range < 2.0) {
-                      std::cout << ">= 1.0 && < 2.0  --  " << object_temp << std::endl;
+                    radar77File << ">= 1.0 && < 2.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 0
+              #if 1
               if (object_temp.Range >= 2.0 && object_temp.Range < 3.0) {
-                      std::cout << ">= 2.0 && < 3.0  --  " << object_temp << std::endl;
+                    radar77File << ">= 2.0 && < 3.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 0
+              #if 1
               if (object_temp.Range >= 3.0 && object_temp.Range < 4.0) {
-                      std::cout << ">= 3.0 && < 4.0  --  " << object_temp << std::endl;
+                    radar77File << ">= 3.0 && < 4.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 0
+              #if 1
               if (object_temp.Range >= 4.0 && object_temp.Range < 5.0) {
-                  if ((object_temp.Azimuth >= 0.0 && object_temp.Azimuth <= 10.0)
-                      || (object_temp.Azimuth >= -10.0 && object_temp.Azimuth <= 0.0)) {
-                        radar77File << ">= 4.0 && < 5.0 | -10.0 - +10.0  --  " << object_temp << std::endl;
-                      } else {
-                        radar77File << ">= 4.0 && < 5.0 | other --  " << object_temp << std::endl;
-                      }
+                    radar77File << ">= 4.0 && < 5.0  --  " << object_temp << std::endl;
               }
               #endif
               #if 1
@@ -144,82 +127,82 @@ int main(int argc, char *argv[]) {
                     radar77File << ">= 5.0 && < 6.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 1
+              #if 0
               if (object_temp.Range >= 6.0 && object_temp.Range < 7.0) {
                     radar77File << ">= 6.0 && < 7.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 1
+              #if 0
               if (object_temp.Range >= 7.0 && object_temp.Range < 8.0) {
                     radar77File << ">= 7.0 && < 8.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 1
+              #if 0
               if (object_temp.Range >= 8.0 && object_temp.Range < 9.0) {
                       radar77File << ">= 8.0 && < 9.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 1
+              #if 0
               if (object_temp.Range >= 9.0 && object_temp.Range < 10.0) {
                       radar77File << ">= 9.0 && < 10.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 1
+              #if 0
               if (object_temp.Range >= 10.0 && object_temp.Range < 11.0) {
                       radar77File << ">= 10.0 && < 11.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 1
+              #if 0
               if (object_temp.Range >= 11.0 && object_temp.Range < 12.0) {
                       radar77File << ">= 11.0 && < 12.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 1
+              #if 0
               if (object_temp.Range >= 12.0 && object_temp.Range < 13.0) {
                       radar77File << ">= 12.0 && < 13.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 1
+              #if 0
               if (object_temp.Range >= 13.0 && object_temp.Range < 14.0) {
                      radar77File << ">= 13.0 && < 14.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 1
+              #if 0
               if (object_temp.Range >= 14.0 && object_temp.Range < 15.0) {
                       radar77File << ">= 14.0 && < 15.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 1
+              #if 0
               if (object_temp.Range >= 15.0 && object_temp.Range < 16.0) {
                       radar77File << ">= 15.0 && < 16.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 1
+              #if 0
               if (object_temp.Range >= 16.0 && object_temp.Range < 17.0) {
                       radar77File << ">= 16.0 && < 17.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 1
+              #if 0
               if (object_temp.Range >= 17.0 && object_temp.Range < 18.0) {
                       radar77File << ">= 17.0 && < 18.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 1
+              #if 0
               if (object_temp.Range >= 18.0 && object_temp.Range < 19.0) {
                       radar77File << ">= 18.0 && < 19.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 1
+              #if 0
               if (object_temp.Range >= 19.0 && object_temp.Range < 20.0) {
                       radar77File << ">= 19.0 && < 20.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 1
+              #if 0
               if (object_temp.Range >= 20.0 && object_temp.Range < 21.0) {
                       radar77File << ">= 20.0 && < 21.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 1
+              #if 0
               if (object_temp.Range >= 21.0 && object_temp.Range < 22.0) {
                       radar77File << ">= 21.0 && < 22.0  --  " << object_temp << std::endl;
               }
@@ -227,7 +210,7 @@ int main(int argc, char *argv[]) {
 
 
             Eigen::Vector3d coordinate = _sc.Radar77Obj2Coordinate(object_temp, i);
-            OGM->DrawRectInMap(Rect(coordinate.x(), coordinate.y(), 0.5, 0.11));
+            OGM->DrawRectInMap(Rect(coordinate.x(), coordinate.y(), 0.25, 0.07));
           }
         }
         radarObjs[i][j].clear();

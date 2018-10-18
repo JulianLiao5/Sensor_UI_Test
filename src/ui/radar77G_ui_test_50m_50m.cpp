@@ -105,34 +105,29 @@ int main(int argc, char *argv[]) {
           #endif
           radar77File << "radarObjs[" << i << "][" << j << "].size: " << radarObjs[i][j].size() << std::endl;
           for (auto &object_temp : radarObjs[i][j]) {
-              #if 0
+              #if 1
               if (object_temp.Range < 1.0) {
-                      std::cout << "< 1.0  --  " << object_temp << std::endl;
+                    radar77File << "< 1.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 0
+              #if 1
               if (object_temp.Range >= 1.0 && object_temp.Range < 2.0) {
-                      std::cout << ">= 1.0 && < 2.0  --  " << object_temp << std::endl;
+                    radar77File << ">= 1.0 && < 2.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 0
+              #if 1
               if (object_temp.Range >= 2.0 && object_temp.Range < 3.0) {
-                      std::cout << ">= 2.0 && < 3.0  --  " << object_temp << std::endl;
+                    radar77File << ">= 2.0 && < 3.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 0
+              #if 1
               if (object_temp.Range >= 3.0 && object_temp.Range < 4.0) {
-                      std::cout << ">= 3.0 && < 4.0  --  " << object_temp << std::endl;
+                    radar77File << ">= 3.0 && < 4.0  --  " << object_temp << std::endl;
               }
               #endif
-              #if 0
+              #if 1
               if (object_temp.Range >= 4.0 && object_temp.Range < 5.0) {
-                  if ((object_temp.Azimuth >= 0.0 && object_temp.Azimuth <= 10.0)
-                      || (object_temp.Azimuth >= -10.0 && object_temp.Azimuth <= 0.0)) {
-                        radar77File << ">= 4.0 && < 5.0 | -10.0 - +10.0  --  " << object_temp << std::endl;
-                      } else {
-                        radar77File << ">= 4.0 && < 5.0 | other --  " << object_temp << std::endl;
-                      }
+                    radar77File << ">= 4.0 && < 5.0  --  " << object_temp << std::endl;
               }
               #endif
               #if 1

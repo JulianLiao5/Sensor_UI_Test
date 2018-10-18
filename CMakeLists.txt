@@ -13,7 +13,7 @@ include_directories(${GFLAGS_INCLUDE_DIR})
 
 include_directories(include)
 
-add_executable(radar77G_ui_test src/ui/radar77G_ui_test.cpp src/can/CanNode.cpp src/can/CanTransmitter.cpp src/sensor/Radar77.cpp
+add_executable(radar77G_ui_test src/ui/radar77G_ui_test_12m_12m.cpp src/can/CanNode.cpp src/can/CanTransmitter.cpp src/sensor/Radar77.cpp
     src/utils/occupancy_status_grid_map.cc src/utils/sensor_coordinate.cpp src/utils/PITime.cpp)
 target_link_libraries(radar77G_ui_test ${OpenCV_LIBS} usbcan glog gflags pthread)
 
