@@ -74,8 +74,9 @@ int main(int argc, char *argv[]) {
     OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(6 / tan(60 * M_PI / 180), 6), CellStatus::UNKNOWN);
     OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(6 / tan(60 * M_PI / 180), -6), CellStatus::UNKNOWN);
 
+    // Adds two lanes.
     for (int i = 0; i <= 5; i += 2) {
-      for (int j = -2; j <= 2; j += 1) {
+      for (int j = -4; j <= 4; j += 1) {
         OGM->DrawRectInMap(Rect(i, j, 0.07, 0.8), CellStatus::UNKNOWN);
       }
     }
