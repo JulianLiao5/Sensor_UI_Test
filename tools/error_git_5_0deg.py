@@ -7,7 +7,7 @@ import numpy as np
 import re
 import sys
 
-MINIMUM_DIST_Y = 1.44
+MAX_ALLOW_DIST_Y = 0.3
 
 def lineno():
     """Returns the current line number in our program."""
@@ -17,23 +17,47 @@ def roundPartial(value, resolution):
     return round(value / resolution) * resolution
 
 def loadradar(filename):
+  lineno = 0
   distance_y = []
+  dist_good_y = []
+  dist_bad_y = []
+  dist_bad_error_y = []
   dist_y_0_0_T_0_5 = []
   dist_y_0_5_T_1_0 = []
   dist_y_1_0_T_1_5 = []
   dist_y_1_5_T_2_0 = []
+  lineno_1_5_T_2_0 = []
   dist_y_2_0_T_2_5 = []
+  lineno_2_0_T_2_5 = []
   dist_y_2_5_T_3_0 = []
+  lineno_2_5_T_3_0 = []
   dist_y_3_0_T_3_5 = []
+  lineno_3_0_T_3_5 = []
   dist_y_3_5_T_4_0 = []
+  lineno_3_5_T_4_0 = []
   dist_y_4_0_T_4_5 = []
+  lineno_4_0_T_4_5 = []
   dist_y_4_5_T_5_0 = []
+  lineno_4_5_T_5_0 = []
   with open(filename) as myfile:
     for line in myfile:
             dist_y_name, dist_y_var = line.partition("distance_y: ")[::2]
             dist_y_item = dist_y_var.split(" ")[0]
             dist_y_val = float(dist_y_item)
             distance_y.append(dist_y_val)
+            if (dist_y_val >= -0.3 and dist_y_val < 0.0) or (dist_y_val >= 0.0 and dist_y_val <= 0.3):
+                dist_good_y.append(dist_y_val)
+            else:
+                dist_bad_y.append(dist_y_val)
+                if dist_y_val < -0.3:
+                    dist_error_val = -0.3 - dist_y_val
+                elif dist_y_val > 0.3:
+                    dist_error_val = dist_y_val - 0.3
+                dist_bad_error_y.append(dist_error_val)
+
+
+
+
             if (dist_y_val >= -0.5 and dist_y_val < 0.0) or (dist_y_val >= 0.0 and dist_y_val < 0.5):
                 dist_y_0_0_T_0_5.append(dist_y_var)
             elif (dist_y_val >= -1.0 and dist_y_val < -0.5) or (dist_y_val >= 0.5 and dist_y_val < 1.0):
@@ -42,18 +66,26 @@ def loadradar(filename):
                 dist_y_1_0_T_1_5.append(dist_y_val)
             elif (dist_y_val >= -2.0 and dist_y_val < -1.5) or (dist_y_val >= 1.5 and dist_y_val < 2.0):
                 dist_y_1_5_T_2_0.append(dist_y_var)
+                lineno_1_5_T_2_0.append(lineno)
             elif (dist_y_val >= -2.5 and dist_y_val < -2.0) or (dist_y_val >= 2.0 and dist_y_val < 2.5):
                 dist_y_2_0_T_2_5.append(dist_y_val)
+                lineno_2_0_T_2_5.append(lineno)
             elif (dist_y_val >= -3.0 and dist_y_val < -2.5) or (dist_y_val >= 2.5 and dist_y_val < 3.0):
                 dist_y_2_5_T_3_0.append(dist_y_var)
+                lineno_2_5_T_3_0.append(lineno)
             elif (dist_y_val >= -3.5 and dist_y_val < -3.0) or (dist_y_val >= 3.0 and dist_y_val < 3.5):
                 dist_y_3_0_T_3_5.append(dist_y_val)
+                lineno_3_0_T_3_5.append(lineno)
             elif (dist_y_val >= -4.0 and dist_y_val < -3.5) or (dist_y_val >= 3.5 and dist_y_val < 4.0):
                 dist_y_3_5_T_4_0.append(dist_y_var)
+                lineno_3_5_T_4_0.append(lineno)
             elif (dist_y_val >= -4.5 and dist_y_val < -4.0) or (dist_y_val >= 4.0 and dist_y_val < 4.5):
                 dist_y_4_0_T_4_5.append(dist_y_val)
+                lineno_4_0_T_4_5.append(lineno)
             elif (dist_y_val >= -5.0 and dist_y_val < -4.5) or (dist_y_val >= 4.5 and dist_y_val < 5.0):
                 dist_y_4_5_T_5_0.append(dist_y_var)
+                lineno_4_5_T_5_0.append(lineno)
+            lineno = lineno + 1
 
 #  total_cnt = len(distance)
 #  bad_cnt = len(distance_bad)
@@ -63,8 +95,13 @@ def loadradar(filename):
 #  print("min: " + str(np.min(distance)) + ", min_bad: " + str(np.min(distance_bad)))
 #  print("min_bad_2: " + "{0:.4f}".format(np.min(distance_bad_2)) + ", mean_bad_2: " + "{0:.4f}".format(np.mean(distance_bad_2)) + ", max_bad_2: " + "{0:.4f}".format(np.max(distance_bad_2)) + ", std dev: " + "{0:.4f}".format(np.std(distance_bad_2)))
 #  print("\n\n")
-  
+
   total_cnt = len(distance_y)
+  bad_cnt = len(dist_bad_y)
+  bad_rate = "{:.2%}".format(float(bad_cnt) / float(total_cnt))
+  print("distance_y num: " + str(len(distance_y)) + " = " + str(len(dist_good_y)) + "[good]" + " + " + str(len(dist_bad_y)) + "[bad]")
+  print("bad_rate: " + str(bad_rate))
+  print("dist_bad_error_y: " + "{0:.4f}".format(np.min(dist_bad_error_y)) + ", mean_bad_2: " + "{0:.4f}".format(np.mean(dist_bad_error_y)) + ", max_bad_2: " + "{0:.4f}".format(np.max(dist_bad_error_y)) + ", std dev: " + "{0:.4f}".format(np.std(dist_bad_error_y)))
   cnt_0_5 = len(dist_y_0_0_T_0_5)
   cnt_1_0 = len(dist_y_0_5_T_1_0)
   cnt_1_5 = len(dist_y_1_0_T_1_5)
@@ -81,12 +118,19 @@ def loadradar(filename):
        "\n        cnt_1_0:  " + str(cnt_1_0) + "    ,    " + "{:.2%}".format(float(cnt_1_0) / float(total_cnt)) +
        "\n        cnt_1_5:  " + str(cnt_1_5) + "    ,    " + "{:.2%}".format(float(cnt_1_5) / float(total_cnt)) +
        "\n        cnt_2_0:  " + str(cnt_2_0) + "    ,    " + "{:.2%}".format(float(cnt_2_0) / float(total_cnt)) +
+        "        |        " + str(lineno_1_5_T_2_0) + "    *    " + str(np.diff(lineno_1_5_T_2_0) - 1) +
        "\n        cnt_2_5:  " + str(cnt_2_5) + "    ,    " + "{:.2%}".format(float(cnt_2_5) / float(total_cnt)) +
+        "        |        " + str(lineno_2_0_T_2_5) + "    *    " + str(np.diff(lineno_2_0_T_2_5)) +
        "\n        cnt_3_0:  " + str(cnt_3_0) + "    ,    " + "{:.2%}".format(float(cnt_3_0) / float(total_cnt)) +
+        "        |        " + str(lineno_2_5_T_3_0) + "    *    " + str(np.diff(lineno_2_5_T_3_0)) +
        "\n        cnt_3_5:  " + str(cnt_3_5) + "    ,    " + "{:.2%}".format(float(cnt_3_5) / float(total_cnt)) +
+        "        |        " + str(lineno_3_0_T_3_5) + "    *    " + str(np.diff(lineno_3_0_T_3_5)) +
        "\n        cnt_4_0:  " + str(cnt_4_0) + "    ,    " + "{:.2%}".format(float(cnt_4_0) / float(total_cnt)) +
+        "        |        " + str(lineno_3_5_T_4_0) + "    *    " + str(np.diff(lineno_3_5_T_4_0)) +
        "\n        cnt_4_5:  " + str(cnt_4_5) + "    ,    " + "{:.2%}".format(float(cnt_4_5) / float(total_cnt)) +
+        "        |        " + str(lineno_4_0_T_4_5) + "    *    " + str(np.diff(lineno_4_0_T_4_5)) +
        "\n        cnt_5_0:  " + str(cnt_5_0) + "    ,    " + "{:.2%}".format(float(cnt_5_0) / float(total_cnt)) +
+        "        |        " + str(lineno_4_5_T_5_0) + "    *    " + str(np.diff(lineno_4_5_T_5_0) - 1) +
        "\nverify_total_cnt:  " + str(verify_total_cnt)
        )
   return distance_y
