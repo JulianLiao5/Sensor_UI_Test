@@ -68,6 +68,8 @@ int main(int argc, char *argv[]) {
     OGM->Reset();
 
     // x: vertical, up+, down-; y: horizontal, left+, right-
+    OGM->DrawLineInMap(cv::Point2d(-1, -6), cv::Point2d(-1, 6), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(-2, -6), cv::Point2d(-2, 6), CellStatus::UNKNOWN);
     OGM->DrawLineInMap(cv::Point2d(0, 6), cv::Point2d(0, -6), CellStatus::UNKNOWN);
     OGM->DrawLineInMap(cv::Point2d(-6, 0), cv::Point2d(6, 0), CellStatus::UNKNOWN);
     OGM->DrawLineInMap(cv::Point2d(1, -6), cv::Point2d(1, 6), CellStatus::UNKNOWN);
@@ -85,7 +87,7 @@ int main(int argc, char *argv[]) {
     OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(-6 * tan(15 * M_PI / 180), -6), CellStatus::UNKNOWN);
 
     // Adds two lanes.
-    for (int i = 0; i <= 5; i += 2) {
+    for (int i = -1; i <= 5; i += 2) {
       for (int j = -4; j <= 4; j += 1) {
         OGM->DrawRectInMap(Rect(i, j, 0.07, 0.8), CellStatus::UNKNOWN);
       }
@@ -97,6 +99,8 @@ int main(int argc, char *argv[]) {
     OGM->DrawRectInMap(Rect(4, 0, 0.2, 0.07), CellStatus::UNKNOWN);
     OGM->DrawRectInMap(Rect(0, 0, 0.4, 0.14), CellStatus::UNKNOWN);
     OGM->DrawRectInMap(Rect(5, 0, 0.4, 0.14), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(-0.2, 0.5 * VEHICLE_WIDTH + 0.2), cv::Point2d(0.2, 0.5 * VEHICLE_WIDTH - 0.2), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(-0.2, -0.5 * VEHICLE_WIDTH - 0.2), cv::Point2d(0.2, -0.5 * VEHICLE_WIDTH + 0.2), CellStatus::UNKNOWN);
     OGM->DrawRectInMap(Rect(6, 0, 0.2, 0.07), CellStatus::UNKNOWN);
     OGM->DrawRectInMap(Rect(-1, 0, 0.2, 0.07), CellStatus::UNKNOWN);
     OGM->DrawRectInMap(Rect(-2, 0, 0.2, 0.07), CellStatus::UNKNOWN);
@@ -138,22 +142,26 @@ int main(int argc, char *argv[]) {
     // cv::namedWindow("map", cv::WINDOW_NORMAL);
     cv::namedWindow("map", cv::WINDOW_AUTOSIZE);
     cv::QtFont font = cv::fontQt("Times");
-    cv::addText(m, "-2", cv::Point(604,798), font);
-    cv::addText(m, "-1", cv::Point(604,698), font);
+    cv::addText(m, "-2", cv::Point(604,795), font);
+    cv::addText(m, "-1", cv::Point(604,695), font);
     cv::addText(m, "0", cv::Point(604,598), font);
     cv::addText(m, "1", cv::Point(604,498), font);
     cv::addText(m, "2", cv::Point(604,398), font);
     cv::addText(m, "3", cv::Point(604,298), font);
     cv::addText(m, "4", cv::Point(604,198), font);
     cv::addText(m, "5", cv::Point(604,98), font);
+    cv::addText(m, "-3", cv::Point(280,604), font);
     cv::addText(m, "-2", cv::Point(380,604), font);
     cv::addText(m, "-1", cv::Point(480,604), font);
     cv::addText(m, "1", cv::Point(705,604), font);
     cv::addText(m, "2", cv::Point(805,604), font);
+    cv::addText(m, "3", cv::Point(905,604), font);
     cv::addText(m, "-30deg", cv::Point(300,142), font);
     cv::addText(m, "-45deg", cv::Point(80,98), font);
+    cv::addText(m, "-105deg", cv::Point(80,730), font);
     cv::addText(m, "30deg", cv::Point(860,142), font);
     cv::addText(m, "45deg", cv::Point(1080,98), font);
+    cv::addText(m, "105deg", cv::Point(1080,730), font);
     // cv::namedWindow("map", cv::WINDOW_NORMAL);
     /* if (car.data != nullptr) {
       cv::Rect roi_rect(OGM->grid_size().width / 2 - car.cols / 2, OGM->grid_size().height / 2 - car.rows / 2, car.cols, car.rows);
