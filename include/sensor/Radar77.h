@@ -13,7 +13,7 @@
 namespace PIAUTO {
     namespace chassis {
 
-        #define RADAR77_NUM    1
+        #define RADAR77_NUM    3
         #define DEFAULT_BUFFER_SIZE    20    // 20 means 20 * 50ms = 1000ms
         #define TIME_INTERVAL_500 150
         #define DEBUG false

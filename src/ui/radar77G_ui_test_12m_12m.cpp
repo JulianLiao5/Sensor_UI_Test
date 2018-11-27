@@ -20,6 +20,12 @@ using namespace std;
 #define TIME_0    0x00
 #define TIME_1    0x1C
 
+ofstream leftRadarFile;
+ofstream middleRadarFile;
+ofstream rightRadarFile;
+ofstream overallRadarFile;
+void logToFile(int index, PIAUTO::chassis::ObjectInfo_77 &object_info);
+
 int main(int argc, char *argv[]) {
   PIAUTO::chassis::Radar_77 *radars[RADAR77_NUM];
   // for the third parameter, if radar connects to "CAN1", then it is 0; if radar connects to "CAN2", then it is 1;
@@ -48,8 +54,10 @@ int main(int argc, char *argv[]) {
 
   PIAUTO::sensor::SensorCoordinate _sc;
 
-  ofstream radar77File;
-  radar77File.open("./radar77_data.txt", ios::out);
+  leftRadarFile.open("./left_radar_data.txt", ios::out);
+  middleRadarFile.open("./middle_radar_data.txt", ios::out);
+  rightRadarFile.open("./right_radar_data.txt", ios::out);
+  overallRadarFile.open("./overall_radar_data.txt", ios::out);
 
   while (1) {
     #if DEBUG
@@ -59,7 +67,7 @@ int main(int argc, char *argv[]) {
 
     OGM->Reset();
 
-    // x: vertical y: horizontal
+    // x: vertical, up+, down-; y: horizontal, left+, right-
     OGM->DrawLineInMap(cv::Point2d(0, 6), cv::Point2d(0, -6), CellStatus::UNKNOWN);
     OGM->DrawLineInMap(cv::Point2d(-6, 0), cv::Point2d(6, 0), CellStatus::UNKNOWN);
     OGM->DrawLineInMap(cv::Point2d(1, -6), cv::Point2d(1, 6), CellStatus::UNKNOWN);
@@ -73,6 +81,8 @@ int main(int argc, char *argv[]) {
     OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(6, -6 * tan(30 * M_PI / 180)), CellStatus::UNKNOWN);
     OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(6 / tan(60 * M_PI / 180), 6), CellStatus::UNKNOWN);
     OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(6 / tan(60 * M_PI / 180), -6), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(-6 * tan(15 * M_PI / 180), 6), CellStatus::UNKNOWN);
+    OGM->DrawLineInMap(cv::Point2d(0, 0), cv::Point2d(-6 * tan(15 * M_PI / 180), -6), CellStatus::UNKNOWN);
 
     // Adds two lanes.
     for (int i = 0; i <= 5; i += 2) {
@@ -88,6 +98,8 @@ int main(int argc, char *argv[]) {
     OGM->DrawRectInMap(Rect(0, 0, 0.4, 0.14), CellStatus::UNKNOWN);
     OGM->DrawRectInMap(Rect(5, 0, 0.4, 0.14), CellStatus::UNKNOWN);
     OGM->DrawRectInMap(Rect(6, 0, 0.2, 0.07), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(-1, 0, 0.2, 0.07), CellStatus::UNKNOWN);
+    OGM->DrawRectInMap(Rect(-2, 0, 0.2, 0.07), CellStatus::UNKNOWN);
 
     for (int i = 0; i != RADAR77_NUM; ++i) {
       radars[i]->GetObjectInfoByTimes(radarObjs[i], DEFAULT_BUFFER_SIZE);
@@ -96,132 +108,38 @@ int main(int argc, char *argv[]) {
           #if DEBUG
           printf("radarObjs[%d][%d].size: %ld\n", i, j, radarObjs[i][j].size());
           #endif
-          radar77File << "radarObjs[" << i << "][" << j << "].size: " << radarObjs[i][j].size() << std::endl;
-          for (auto &object_temp : radarObjs[i][j]) {
-              #if 1
-              if (object_temp.Range < 1.0) {
-                    radar77File << "< 1.0  --  " << object_temp << std::endl;
-              }
-              #endif
-              #if 1
-              if (object_temp.Range >= 1.0 && object_temp.Range < 2.0) {
-                    radar77File << ">= 1.0 && < 2.0  --  " << object_temp << std::endl;
-              }
-              #endif
-              #if 1
-              if (object_temp.Range >= 2.0 && object_temp.Range < 3.0) {
-                    radar77File << ">= 2.0 && < 3.0  --  " << object_temp << std::endl;
-              }
-              #endif
-              #if 1
-              if (object_temp.Range >= 3.0 && object_temp.Range < 4.0) {
-                    radar77File << ">= 3.0 && < 4.0  --  " << object_temp << std::endl;
-              }
-              #endif
-              #if 1
-              if (object_temp.Range >= 4.0 && object_temp.Range < 5.0) {
-                    radar77File << ">= 4.0 && < 5.0  --  " << object_temp << std::endl;
-              }
-              #endif
-              #if 1
-              if (object_temp.Range >= 5.0 && object_temp.Range < 6.0) {
-                    radar77File << ">= 5.0 && < 6.0  --  " << object_temp << std::endl;
-              }
-              #endif
-              #if 0
-              if (object_temp.Range >= 6.0 && object_temp.Range < 7.0) {
-                    radar77File << ">= 6.0 && < 7.0  --  " << object_temp << std::endl;
-              }
-              #endif
-              #if 0
-              if (object_temp.Range >= 7.0 && object_temp.Range < 8.0) {
-                    radar77File << ">= 7.0 && < 8.0  --  " << object_temp << std::endl;
-              }
-              #endif
-              #if 0
-              if (object_temp.Range >= 8.0 && object_temp.Range < 9.0) {
-                      radar77File << ">= 8.0 && < 9.0  --  " << object_temp << std::endl;
-              }
-              #endif
-              #if 0
-              if (object_temp.Range >= 9.0 && object_temp.Range < 10.0) {
-                      radar77File << ">= 9.0 && < 10.0  --  " << object_temp << std::endl;
-              }
-              #endif
-              #if 0
-              if (object_temp.Range >= 10.0 && object_temp.Range < 11.0) {
-                      radar77File << ">= 10.0 && < 11.0  --  " << object_temp << std::endl;
-              }
-              #endif
-              #if 0
-              if (object_temp.Range >= 11.0 && object_temp.Range < 12.0) {
-                      radar77File << ">= 11.0 && < 12.0  --  " << object_temp << std::endl;
-              }
-              #endif
-              #if 0
-              if (object_temp.Range >= 12.0 && object_temp.Range < 13.0) {
-                      radar77File << ">= 12.0 && < 13.0  --  " << object_temp << std::endl;
-              }
-              #endif
-              #if 0
-              if (object_temp.Range >= 13.0 && object_temp.Range < 14.0) {
-                     radar77File << ">= 13.0 && < 14.0  --  " << object_temp << std::endl;
-              }
-              #endif
-              #if 0
-              if (object_temp.Range >= 14.0 && object_temp.Range < 15.0) {
-                      radar77File << ">= 14.0 && < 15.0  --  " << object_temp << std::endl;
-              }
-              #endif
-              #if 0
-              if (object_temp.Range >= 15.0 && object_temp.Range < 16.0) {
-                      radar77File << ">= 15.0 && < 16.0  --  " << object_temp << std::endl;
-              }
-              #endif
-              #if 0
-              if (object_temp.Range >= 16.0 && object_temp.Range < 17.0) {
-                      radar77File << ">= 16.0 && < 17.0  --  " << object_temp << std::endl;
-              }
-              #endif
-              #if 0
-              if (object_temp.Range >= 17.0 && object_temp.Range < 18.0) {
-                      radar77File << ">= 17.0 && < 18.0  --  " << object_temp << std::endl;
-              }
-              #endif
-              #if 0
-              if (object_temp.Range >= 18.0 && object_temp.Range < 19.0) {
-                      radar77File << ">= 18.0 && < 19.0  --  " << object_temp << std::endl;
-              }
-              #endif
-              #if 0
-              if (object_temp.Range >= 19.0 && object_temp.Range < 20.0) {
-                      radar77File << ">= 19.0 && < 20.0  --  " << object_temp << std::endl;
-              }
-              #endif
-              #if 0
-              if (object_temp.Range >= 20.0 && object_temp.Range < 21.0) {
-                      radar77File << ">= 20.0 && < 21.0  --  " << object_temp << std::endl;
-              }
-              #endif
-              #if 0
-              if (object_temp.Range >= 21.0 && object_temp.Range < 22.0) {
-                      radar77File << ">= 21.0 && < 22.0  --  " << object_temp << std::endl;
-              }
-              #endif
+          if (0 == i) {
+            middleRadarFile << "middle, radarObs[0][" << j << "].size: " << radarObjs[0][j].size() << std::endl;
+          } else if (1 == i) {
+            leftRadarFile << "left, radarObs[1][" << j << "].size: " << radarObjs[1][j].size() << std::endl;
+          } else if (2 == i) {
+            rightRadarFile << "right, radarObs[2][" << j << "].size: " << radarObjs[2][j].size() << std::endl;
+          }
 
+          for (auto &object_info : radarObjs[i][j]) {
+            logToFile(i, object_info);
 
-            Eigen::Vector3d coordinate = _sc.Radar77Obj2Coordinate(object_temp, i);
+            Eigen::Vector3d coordinate = _sc.Radar77Obj2Coordinate(object_info, i);
+            if (0 == i) {
+              overallRadarFile << "Sensor coordinate: [middle] " << object_info << ", world coordinate: (" << coordinate.x() << ", " << coordinate.y() << ")" << std::endl;
+            } else if (1 == i) {
+              overallRadarFile << "Sensor coordinate: [left] " << object_info << ", world coordinate: (" << coordinate.x() << ", " << coordinate.y() << ")" << std::endl;
+            } else if (2 == i) {
+              overallRadarFile << "Sensor coordinate: [right] " << object_info << ", world coordinate: (" << coordinate.x() << ", " << coordinate.y() << ")" << std::endl;
+            }
             OGM->DrawRectInMap(Rect(coordinate.x(), coordinate.y(), 0.25, 0.07));
           }
         }
         radarObjs[i][j].clear();
-      }
-    }
+      } // end of "for (int j = 0; j != DEFAULT_BUFFER_SIZE; ++j)"
+    } // end of "for (int i = 0; i != RADAR77_NUM; ++i)"
 
     cv::Mat m = OGM->Visualize();
     // cv::namedWindow("map", cv::WINDOW_NORMAL);
     cv::namedWindow("map", cv::WINDOW_AUTOSIZE);
     cv::QtFont font = cv::fontQt("Times");
+    cv::addText(m, "-2", cv::Point(604,798), font);
+    cv::addText(m, "-1", cv::Point(604,698), font);
     cv::addText(m, "0", cv::Point(604,598), font);
     cv::addText(m, "1", cv::Point(604,498), font);
     cv::addText(m, "2", cv::Point(604,398), font);
@@ -250,7 +168,139 @@ int main(int argc, char *argv[]) {
 
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
-  radar77File.close();
+  leftRadarFile.close();
+  middleRadarFile.close();
+  rightRadarFile.close();
+  overallRadarFile.close();
 
   return 0;
+}
+
+void logByIndex(int index, std::string range_desc, PIAUTO::chassis::ObjectInfo_77 &object_info) {
+  if (0 == index) {
+    middleRadarFile << range_desc << object_info << std::endl;
+  } else if (1 == index) {
+    leftRadarFile << range_desc << object_info << std::endl;
+  } else if (2 == index) {
+    rightRadarFile << range_desc << object_info << std::endl;
+  }
+}
+
+void logToFile(int index, PIAUTO::chassis::ObjectInfo_77 &object_info) {
+  #if 1
+  if (object_info.Range < 1.0) {
+    logByIndex(index, "< 1.0  --  ", object_info);
+  }
+  #endif
+
+  #if 1
+  if (object_info.Range >= 1.0 && object_info.Range < 2.0) {
+    logByIndex(index, ">= 1.0 && < 2.0  --  ", object_info);
+  }
+  #endif
+
+  #if 1
+  if (object_info.Range >= 2.0 && object_info.Range < 3.0) {
+    logByIndex(index, ">= 2.0 && < 3.0  --  ", object_info);
+  }
+  #endif
+
+  #if 1
+  if (object_info.Range >= 3.0 && object_info.Range < 4.0) {
+    logByIndex(index, ">= 3.0 && < 4.0  --  ", object_info);
+  }
+  #endif
+
+  #if 1
+  if (object_info.Range >= 4.0 && object_info.Range < 5.0) {
+    logByIndex(index, ">= 4.0 && < 5.0  --  ", object_info);
+  }
+  #endif
+
+  #if 1
+  if (object_info.Range >= 5.0 && object_info.Range < 6.0) {
+    logByIndex(index, ">= 5.0 && < 6.0  --  ", object_info);
+  }
+  #endif
+
+  #if 0
+  if (object_info.Range >= 6.0 && object_info.Range < 7.0) {
+    logByIndex(index, ">= 6.0 && < 7.0  --  ", object_info);
+  }
+  #endif
+  #if 0
+  if (object_info.Range >= 7.0 && object_info.Range < 8.0) {
+    logByIndex(index, ">= 7.0 && < 8.0  --  ", object_info);
+  }
+  #endif
+  #if 0
+  if (object_info.Range >= 8.0 && object_info.Range < 9.0) {
+    logByIndex(index, ">= 8.0 && < 9.0  --  ", object_info);
+  }
+  #endif
+  #if 0
+  if (object_info.Range >= 9.0 && object_info.Range < 10.0) {
+    logByIndex(index, ">= 9.0 && < 10.0  --  ", object_info);
+  }
+  #endif
+  #if 0
+  if (object_info.Range >= 10.0 && object_info.Range < 11.0) {
+    logByIndex(index, ">= 10.0 && < 11.0  --  ", object_info);
+  }
+  #endif
+  #if 0
+  if (object_info.Range >= 11.0 && object_info.Range < 12.0) {
+    logByIndex(index, ">= 11.0 && < 12.0  --  ", object_info);
+  }
+  #endif
+  #if 0
+  if (object_info.Range >= 12.0 && object_info.Range < 13.0) {
+    logByIndex(index, ">= 12.0 && < 13.0  --  ", object_info);
+  }
+  #endif
+  #if 0
+  if (object_info.Range >= 13.0 && object_info.Range < 14.0) {
+    logByIndex(index, ">= 13.0 && < 14.0  --  ", object_info);
+  }
+  #endif
+  #if 0
+  if (object_info.Range >= 14.0 && object_info.Range < 15.0) {
+    logByIndex(index, ">= 14.0 && < 15.0  --  ", object_info);
+  }
+  #endif
+  #if 0
+  if (object_info.Range >= 15.0 && object_info.Range < 16.0) {
+    logByIndex(index, ">= 15.0 && < 16.0  --  ", object_info);
+  }
+  #endif
+  #if 0
+  if (object_info.Range >= 16.0 && object_info.Range < 17.0) {
+    logByIndex(index, ">= 16.0 && < 17.0  --  ", object_info);
+  }
+  #endif
+  #if 0
+  if (object_info.Range >= 17.0 && object_info.Range < 18.0) {
+    logByIndex(index, ">= 17.0 && < 18.0  --  ", object_info);
+  }
+  #endif
+  #if 0
+  if (object_info.Range >= 18.0 && object_info.Range < 19.0) {
+    logByIndex(index, ">= 18.0 && < 19.0  --  ", object_info);
+  }
+  #endif
+  #if 0
+  if (object_info.Range >= 19.0 && object_info.Range < 20.0) {
+    logByIndex(index, ">= 19.0 && < 20.0  --  ", object_info);
+  }
+  #endif
+  #if 0
+  if (object_info.Range >= 20.0 && object_info.Range < 21.0) {
+    logByIndex(index, ">= 20.0 && < 21.0  --  ", object_info);
+  }
+  #endif
+  #if 0
+  if (object_info.Range >= 21.0 && object_info.Range < 22.0) {
+    logByIndex(index, ">= 21.0 && < 22.0  --  ", object_info);
+  }
+  #endif
 }

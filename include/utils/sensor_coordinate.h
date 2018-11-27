@@ -8,6 +8,12 @@
 #include <eigen3/Eigen/Core>
 
 #include <sensor/Radar77.h>
+// [BEGIN - luobo]
+// #define VEHICLE_LENGTH    1.70
+// #define VEHICLE_WIDTH    1.2
+// [END - luobo]
+#define VEHICLE_LENGTH    0.00
+#define VEHICLE_WIDTH    0.82
 
 namespace PIAUTO {
     namespace sensor {

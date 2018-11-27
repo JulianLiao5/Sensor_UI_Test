@@ -8,17 +8,19 @@ namespace PIAUTO {
     namespace sensor {
 
         SensorCoordinate::SensorCoordinate() {
-            world_to_map_radar[0] << 1.0, 0.0, 0.0,
+            // 中间毫米波雷达
+            world_to_map_radar[0] << 1.0, 0.0, 0.5 * VEHICLE_LENGTH,
                     0.0, 1.0, 0.0,
                     0.0, 0.0, 1.0;
 
             double num_temp=std::sqrt(2)/2;
-            world_to_map_radar[1] << num_temp, -num_temp, 0.4,
-                    num_temp, num_temp, 0.6,
+            // 左边毫米波雷达
+            world_to_map_radar[1] << num_temp, -num_temp, 0.5 * VEHICLE_LENGTH,
+                    num_temp, num_temp, 0.5 * VEHICLE_WIDTH,
                     0.0, 0.0, 1.0;
-
-            world_to_map_radar[2] << num_temp, num_temp, 0.4,
-                    -num_temp, num_temp, -0.6,
+            // 右边毫米波雷达
+            world_to_map_radar[2] << num_temp, num_temp, 0.5 * VEHICLE_LENGTH,
+                    -num_temp, num_temp, -0.5 * VEHICLE_WIDTH,
                     0.0, 0.0, 1.0;
         }
 
