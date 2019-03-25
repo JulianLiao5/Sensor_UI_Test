@@ -39,7 +39,7 @@ def loadradar(filename):
     with open('statistic.txt', 'w+') as filter_file:
             for line in myfile.readlines():
                 line = line[:-1]    # deletes extra line
-                if re.search("radarObjs", line, re.IGNORECASE):
+                if re.search("buff", line, re.IGNORECASE):
                     cur_Line_Type = LineType.Line_radarObjs
                     last_radarObjs_line = line
                     cur_radarObjs_lineno = lineno

@@ -18,7 +18,7 @@ def loadradar(filename):
     with open('transfer.txt', 'w+') as filter_file:
             for line in myfile.readlines():
                 line = line[:-1]    # deletes extra line
-                if re.search("radarObjs", line, re.IGNORECASE):
+                if re.search("buff", line, re.IGNORECASE):
                     np.savetxt(filter_file, np.array(line).reshape(1), fmt="%s")
                 elif re.search("Angle", line, re.IGNORECASE):
                     angle_name, angle_var = line.partition("Angle: ")[::2]

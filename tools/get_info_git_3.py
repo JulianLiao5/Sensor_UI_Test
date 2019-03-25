@@ -31,7 +31,7 @@ def loadradar(filename):
   with open(filename) as myfile:
             for line in myfile.readlines():
                 line = line[:-1]    # deletes extra line
-                if re.search("radarObjs", line, re.IGNORECASE):
+                if re.search("buff", line, re.IGNORECASE):
                     frame_cnt += 1
                     if CNT == 1:
                         detect_num.append(1)
