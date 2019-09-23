@@ -38,34 +38,22 @@ def loadradar(filename):
                     cur_time = float(fields[8])
                     if 0 == aa:
                         diff_time_0 = cur_time - last_timestamp_val_0
-                        if last_timestamp_val_0 >= 0.0:
-                            if diff_time_0 >= 1000:
-                                last_timestamp_val_0 = cur_time
-                                continue
-                            elif diff_time_0 <= 0:
-                                continue
+                        if last_timestamp_val_0 >= 0.0 and diff_time_0 <= 0:
+                            continue
                         timestamp_0.append(cur_time)
 
                         last_timestamp_val_0 = cur_time
                     elif 1 == aa:
                         diff_time_1 = cur_time - last_timestamp_val_1
-                        if last_timestamp_val_1 >= 0.0:
-                            if diff_time_1 >= 1000:
-                                last_timestamp_val_1 = cur_time
-                                continue
-                            elif diff_time_1 <= 0:
-                                continue
+                        if last_timestamp_val_1 >= 0.0 and diff_time_1 <= 0:
+                            continue
                         timestamp_1.append(cur_time)
 
                         last_timestamp_val_1 = cur_time
                     elif 7 == aa:
                         diff_time_7 = cur_time - last_timestamp_val_7
-                        if last_timestamp_val_7 >= 0.0:
-                            if diff_time_1 >= 1000:
-                                last_timestamp_val_1 = cur_time
-                                continue
-                            elif diff_time_1 <= 0:
-                                continue
+                        if last_timestamp_val_7 >= 0.0 and diff_time_7 <= 0:
+                            continue
                         timestamp_7.append(cur_time)
 
                         last_timestamp_val_7 = cur_time
@@ -77,9 +65,15 @@ if __name__ == "__main__":
         # frame_NO_0, range_valid_0, timestamp_0, range_start_0, timestamp_start_0, range_end_0, timestamp_end_0, frame_NO_1, range_valid_1, timestamp_1, range_start_1, timestamp_start_1, range_end_1, timestamp_end_1 = loadradar(sys.argv[1])
         timestamp_0, timestamp_1, timestamp_7 = loadradar(sys.argv[1])
         ## print(timestamp_0)
-        diff_time_0 = np.diff(timestamp_0)
-        diff_time_1 = np.diff(timestamp_1)
-        diff_time_7 = np.diff(timestamp_7)
+        diff_time_0_origin = np.diff(timestamp_0)
+        diff_time_0 = diff_time_0_origin
+        #diff_time_0 = [x for x in diff_time_0_origin if x < 1000]
+        diff_time_1_origin = np.diff(timestamp_1)
+        diff_time_1 = diff_time_1_origin
+        #diff_time_1 = [x for x in diff_time_1_origin if x < 1000]
+        diff_time_7_origin = np.diff(timestamp_7)
+        diff_time_7 = diff_time_7_origin
+        #diff_time_7 = [x for x in diff_time_7_origin if x < 1000]
         duration_0 = timestamp_0[len(timestamp_0) - 1] - timestamp_0[0]
         min_0 = int(duration_0 / (1000 * 60))
         sec_0 = int((duration_0 - (min_0 * 1000 * 60)) / 1000)
