@@ -19,88 +19,126 @@ def roundPartial(value, resolution):
     return round(value / resolution) * resolution
 
 def loadradar(filename):
-    init_0 = 1
-    frame_num_0 = 0
     last_timestamp_val_0 = -1.0
-    NO_0 = []
-    range_0 = []
+    last_timestamp_val_1 = -1.0
+    last_timestamp_val_7 = -1.0
     timestamp_0 = []
-    linux_timestamp_0 = []
+    timestamp_1 = []
+    timestamp_7 = []
+    radar_IDs = [0, 1, 7]
     with open(filename) as myfile:
-        with open('filter_sonar.txt', 'w+') as filter_file:
             for line in myfile:
                 line = line[:-1]    # deletes extra line
-                if re.search("vehicle_coordinate 0", line, re.IGNORECASE):
+                for aa in radar_IDs:
+                  if re.search("vehicle_coordinate " + str(aa), line, re.IGNORECASE):
                     fields = line.split(" ")
-                    print("0: " + fields[0] + ", 1: " + fields[1] + ", 2: " + fields[2])
 
-                    if last_timestamp_val_0 < 0.0:
-                        frame_num_0 += 1
-                    diff_timestamp_0 = timestamp_val_0 - last_timestamp_val_0
-                    if last_timestamp_val_0 >= 0.0:
-                        if 0 == diff_timestamp_0:
-                            continue
-                        else:
-                            frame_num_0 += 1
-                    ## print("frame_num_0: " + str(frame_num_0) + ", timestamp_val_0: " + str(timestamp_val_0) + ", last_timestamp_val_0: " + str(last_timestamp_val_0))
-                    last_timestamp_val_0 = timestamp_val_0
+                    ## fields[8] -> CAN_time
+                    ## fields[9] -> Linux_time
+                    cur_time = float(fields[8])
+                    if 0 == aa:
+                        diff_time_0 = cur_time - last_timestamp_val_0
+                        if last_timestamp_val_0 >= 0.0:
+                            if diff_time_0 >= 1000:
+                                last_timestamp_val_0 = cur_time
+                                continue
+                            elif diff_time_0 <= 0:
+                                continue
+                        timestamp_0.append(cur_time)
 
-                    #if range_val_0 > 0 and range_val_0 < 60000:
-                    range_val_0 = 0.001 * range_val_0
-                    NO_0.append(frame_num_0)
-                    range_0.append(range_val_0)
-                    timestamp_0.append(timestamp_val_0)
-                    linux_timestamp_0.append(linux_timestamp_val_0)
-                    line = line + ", frame_num_0: " + str(frame_num_0)
-                    np.savetxt(filter_file, np.array(line).reshape(1), fmt="%s")
+                        last_timestamp_val_0 = cur_time
+                    elif 1 == aa:
+                        diff_time_1 = cur_time - last_timestamp_val_1
+                        if last_timestamp_val_1 >= 0.0:
+                            if diff_time_1 >= 1000:
+                                last_timestamp_val_1 = cur_time
+                                continue
+                            elif diff_time_1 <= 0:
+                                continue
+                        timestamp_1.append(cur_time)
 
-    return NO_0, range_0, timestamp_0, linux_timestamp_0
+                        last_timestamp_val_1 = cur_time
+                    elif 7 == aa:
+                        diff_time_7 = cur_time - last_timestamp_val_7
+                        if last_timestamp_val_7 >= 0.0:
+                            if diff_time_1 >= 1000:
+                                last_timestamp_val_1 = cur_time
+                                continue
+                            elif diff_time_1 <= 0:
+                                continue
+                        timestamp_7.append(cur_time)
+
+                        last_timestamp_val_7 = cur_time
+
+    return timestamp_0, timestamp_1, timestamp_7
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
         # frame_NO_0, range_valid_0, timestamp_0, range_start_0, timestamp_start_0, range_end_0, timestamp_end_0, frame_NO_1, range_valid_1, timestamp_1, range_start_1, timestamp_start_1, range_end_1, timestamp_end_1 = loadradar(sys.argv[1])
-        frame_NO_0, range_valid_0, timestamp_0, linux_timestamp_0 = loadradar(sys.argv[1])
+        timestamp_0, timestamp_1, timestamp_7 = loadradar(sys.argv[1])
         ## print(timestamp_0)
         diff_time_0 = np.diff(timestamp_0)
-        first_time = timestamp_0[0]
-        last_time = timestamp_0[len(timestamp_0) - 1]
-        duration = last_time - first_time
-        min = int(duration / (1000 * 60))
-        sec = int((duration - (min * 1000 * 60)) / 1000)
-        msec = int((duration - (min * 1000 * 60)) % 1000)
-        ## print(diff_time_0)
-        fig1 = plt.figure("ID0 diff timestamp")
-        plt.plot(diff_time_0, '-b')
+        diff_time_1 = np.diff(timestamp_1)
+        diff_time_7 = np.diff(timestamp_7)
+        duration_0 = timestamp_0[len(timestamp_0) - 1] - timestamp_0[0]
+        min_0 = int(duration_0 / (1000 * 60))
+        sec_0 = int((duration_0 - (min_0 * 1000 * 60)) / 1000)
+        msec_0 = int((duration_0 - (min_0 * 1000 * 60)) % 1000)
+        duration_1 = timestamp_1[len(timestamp_1) - 1] - timestamp_1[0]
+        min_1 = int(duration_1 / (1000 * 60))
+        sec_1 = int((duration_1 - (min_1 * 1000 * 60)) / 1000)
+        msec_1 = int((duration_1 - (min_1 * 1000 * 60)) % 1000)
+        duration_7 = timestamp_7[len(timestamp_7) - 1] - timestamp_7[0]
+        min_7 = int(duration_7 / (1000 * 60))
+        sec_7 = int((duration_7 - (min_7 * 1000 * 60)) / 1000)
+        msec_7 = int((duration_7 - (min_7 * 1000 * 60)) % 1000)
+        figure1 = plt.figure("Radar diff timestamp")
+        figure1.suptitle('[1957]    ONLY ID0/1/7 3 radars', x=0.50, y=0.92, fontsize=24)
+        ax_1 = figure1.add_subplot(3, 1, 1)
+        ax_1.plot(diff_time_0, '-b')
         font = {'family': 'serif',
                 'color':  'blue',
                 'weight': 'normal',
                 'size': 16,
                }
-        plt.text(0, 90, "duration:    " + str(min) + "min : "  + str(sec) + "sec : " + str(msec) + "msec\n", fontdict=font)
-        plt.text(750, 110, "ID0 - diff_time:\n        min: " + "{0:.2f}".format(np.min(diff_time_0)) + "ms\n        mean: " + "{0:.2f}".format(np.mean(diff_time_0)) + "ms\n        max: " + "{0:.2f}".format(np.max(diff_time_0)) + "ms\n        std dev: " + "{0:.2f}".format(np.std(diff_time_0)), fontdict=font)
-        plt.ylabel('ID0 diff timestamp[milliseconds]', size=10)
-        curves = ["CHANNEL0  -  CAN diff time"]
-        plt.legend(curves, prop={'size':18})
-        ax = plt.gca()
-        leg = ax.get_legend()
+        ax_1.text(0, 3000, "duration:    " + str(min_0) + "min : "  + str(sec_0) + "sec : " + str(msec_0) + "msec\n", fontdict=font)
+        ax_1.text(12000, 1000, "ID0 - diff_time:\n        min: " + "{0:.2f}".format(np.min(diff_time_0)) + "ms\n        mean: " + "{0:.2f}".format(np.mean(diff_time_0)) + "ms\n        max: " + "{0:.2f}".format(np.max(diff_time_0)) + "ms\n        std dev: " + "{0:.2f}".format(np.std(diff_time_0)), fontdict=font)
+        ax_1.set_ylabel('ID0 diff timestamp[milliseconds]', size=10)
+        ax_1.grid(True)
+        curves = ["ID0  -  CAN diff time"]
+        ax_1.legend(curves, prop={'size':18})
+        leg = ax_1.get_legend()
         leg.legendHandles[0].set_color('blue')
-        plt.grid(True)
-##        diff_linux_time = np.diff(linux_timestamp_0)
-##        plt.plot(diff_linux_time, '-r')
-##        font = {'family': 'serif',
-##        'color':  'red',
-##        'weight': 'normal',
-##        'size': 14,
-##        }
-##        plt.text(110, 6000, "ID1 - diff_linux_time:\n        min: " + "{0:.4f}".format(np.min(diff_linux_time)) + "ms\n        mean: " + "{0:.4f}".format(np.mean(diff_linux_time)) + "ms\n        max: " + "{0:.4f}".format(np.max(diff_linux_time)) + "ms\n        std dev: " + "{0:.4f}".format(np.std(diff_linux_time)), fontdict=font)
-##        plt.ylabel('diff timestamp[milliseconds]', size=10)
-##        curves = ["CAN time", "Linux time"]
-##        plt.legend(curves, prop={'size':10})
-##        ax = plt.gca()
-##        leg = ax.get_legend()
-##        leg.legendHandles[0].set_color('blue')
-##        leg.legendHandles[1].set_color('red')
-##        plt.grid(True)
+        ax_2 = figure1.add_subplot(3, 1, 2)
+        ax_2.plot(diff_time_1, '-g')
+        font = {'family': 'serif',
+                'color':  'green',
+                'weight': 'normal',
+                'size': 16,
+               }
+        ax_2.text(0, 3000, "duration:    " + str(min_1) + "min : "  + str(sec_1) + "sec : " + str(msec_1) + "msec\n", fontdict=font)
+        ax_2.text(12000, 1000, "ID1 - diff_time:\n        min: " + "{0:.2f}".format(np.min(diff_time_1)) + "ms\n        mean: " + "{0:.2f}".format(np.mean(diff_time_1)) + "ms\n        max: " + "{0:.2f}".format(np.max(diff_time_1)) + "ms\n        std dev: " + "{0:.2f}".format(np.std(diff_time_1)), fontdict=font)
+        ax_2.set_ylabel('ID1 diff timestamp[milliseconds]', size=10)
+        ax_2.grid(True)
+        curves = ["ID1  -  CAN diff time"]
+        ax_2.legend(curves, prop={'size':18})
+        leg = ax_2.get_legend()
+        leg.legendHandles[0].set_color('green')
+        ax_3 = figure1.add_subplot(3, 1, 3)
+        ax_3.plot(diff_time_7, '-m')
+        font = {'family': 'serif',
+                'color':  'magenta',
+                'weight': 'normal',
+                'size': 16,
+               }
+        ax_3.text(0, 3000, "duration:    " + str(min_7) + "min : "  + str(sec_7) + "sec : " + str(msec_7) + "msec\n", fontdict=font)
+        ax_3.text(12000, 1000, "ID7 - diff_time:\n        min: " + "{0:.2f}".format(np.min(diff_time_7)) + "ms\n        mean: " + "{0:.2f}".format(np.mean(diff_time_7)) + "ms\n        max: " + "{0:.2f}".format(np.max(diff_time_7)) + "ms\n        std dev: " + "{0:.2f}".format(np.std(diff_time_7)), fontdict=font)
+        ax_3.set_ylabel('ID7 diff timestamp[milliseconds]', size=10)
+        ax_3.grid(True)
+        curves = ["ID7  -  CAN diff time"]
+        ax_3.legend(curves, prop={'size':18})
+        leg = ax_3.get_legend()
+        leg.legendHandles[0].set_color('magenta')
         plt.show()
     else:
         print("Usage: " + sys.argv[0] + " radar.txt")
