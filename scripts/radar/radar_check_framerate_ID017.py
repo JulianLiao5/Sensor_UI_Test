@@ -10,6 +10,10 @@ import sys
 START_MOVE_CONTINUE_NUM = 5
 END_MOVE_CONTINUE_NUM = 5
 
+if 1:
+  FILTERED = False
+else:
+  FILTERED = True
 
 def lineno():
     """Returns the current line number in our program."""
@@ -66,17 +70,24 @@ if __name__ == "__main__":
         timestamp_0, timestamp_1, timestamp_7 = loadradar(sys.argv[1])
         ## print(timestamp_0)
         diff_time_0_origin = np.diff(timestamp_0)
-        #diff_time_0 = diff_time_0_origin
-        diff_time_0 = [x for x in diff_time_0_origin if x < 1000]
-        ratio_0 = (len(diff_time_0_origin) - len(diff_time_0)) / len(diff_time_0_origin)
+        if FILTERED:
+            diff_time_0 = [x for x in diff_time_0_origin if x < 1000]
+        else:
+            diff_time_0 = diff_time_0_origin
+        print("ID0 - len_origin:" + str(len(diff_time_0_origin)) + ", len_filtered: " + str(len(diff_time_0)))
+        ratio_0 = float((len(diff_time_0_origin) - len(diff_time_0))) / float(len(diff_time_0_origin))
         diff_time_1_origin = np.diff(timestamp_1)
-        #diff_time_1 = diff_time_1_origin
-        diff_time_1 = [x for x in diff_time_1_origin if x < 1000]
-        ratio_1 = (len(diff_time_1_origin) - len(diff_time_1)) / len(diff_time_1_origin)
+        if FILTERED:
+            diff_time_1 = [x for x in diff_time_1_origin if x < 1000]
+        else:
+            diff_time_1 = diff_time_1_origin
+        ratio_1 = float((len(diff_time_1_origin) - len(diff_time_1))) / float(len(diff_time_1_origin))
         diff_time_7_origin = np.diff(timestamp_7)
-        #diff_time_7 = diff_time_7_origin
-        diff_time_7 = [x for x in diff_time_7_origin if x < 1000]
-        ratio_7 = (len(diff_time_7_origin) - len(diff_time_7)) / len(diff_time_7_origin)
+        if FILTERED:
+            diff_time_7 = [x for x in diff_time_7_origin if x < 1000]
+        else:
+            diff_time_7 = diff_time_7_origin
+        ratio_7 = float((len(diff_time_7_origin) - len(diff_time_7))) / float(len(diff_time_7_origin))
         duration_0 = timestamp_0[len(timestamp_0) - 1] - timestamp_0[0]
         min_0 = int(duration_0 / (1000 * 60))
         sec_0 = int((duration_0 - (min_0 * 1000 * 60)) / 1000)
@@ -90,7 +101,10 @@ if __name__ == "__main__":
         sec_7 = int((duration_7 - (min_7 * 1000 * 60)) / 1000)
         msec_7 = int((duration_7 - (min_7 * 1000 * 60)) % 1000)
         figure1 = plt.figure("Radar diff timestamp")
-        figure1.suptitle('[1957]    ONLY ID0/1/7 3 radars', x=0.50, y=0.92, fontsize=24)
+        if FILTERED:
+            figure1.suptitle('[1645][Filtered]    ALL 8 radars', x=0.50, y=0.92, fontsize=24)
+        else:
+            figure1.suptitle('[1645][Origin]    ALL 8 radars', x=0.50, y=0.92, fontsize=24)
         ax_1 = figure1.add_subplot(3, 1, 1)
         ax_1.plot(diff_time_0, '-b')
         font = {'family': 'serif',
@@ -100,7 +114,10 @@ if __name__ == "__main__":
                 'size': 16,
                }
         ax_1.text(0, 3000, "duration:    " + str(min_0) + "min : "  + str(sec_0) + "sec : " + str(msec_0) + "msec\n", fontdict=font)
-        ax_1.text(10000, 70, "ID0 ratio: " + "{0:.2f}".format(ratio_0) + " diff_time:\n        min: " + "{0:.2f}".format(np.min(diff_time_0)) + "ms\n        mean: " + "{0:.2f}".format(np.mean(diff_time_0)) + "ms\n        max: " + "{0:.2f}".format(np.max(diff_time_0)) + "ms\n        std dev: " + "{0:.2f}".format(np.std(diff_time_0)), fontdict=font)
+        if FILTERED:
+            ax_1.text(2500, 160, "ID0 ratio: " + "{0:.4f}".format(ratio_0) + "     diff_time:  [min: " + "{0:.2f}".format(np.min(diff_time_0)) + "ms,  mean: " + "{0:.2f}".format(np.mean(diff_time_0)) + "ms,  max: " + "{0:.2f}".format(np.max(diff_time_0)) + "ms  std dev: " + "{0:.2f}".format(np.std(diff_time_0)) + "]", fontdict=font)
+        else:
+            ax_1.text(8500, 1000, "diff_time:\n        min: " + "{0:.2f}".format(np.min(diff_time_0)) + "ms\n        mean: " + "{0:.2f}".format(np.mean(diff_time_0)) + "ms\n        max: " + "{0:.2f}".format(np.max(diff_time_0)) + "ms\n        std dev: " + "{0:.2f}".format(np.std(diff_time_0)), fontdict=font)
         ax_1.set_ylabel('ID0 diff timestamp[milliseconds]', size=10)
         ax_1.grid(True)
         curves = ["ID0  -  CAN diff time"]
@@ -116,7 +133,10 @@ if __name__ == "__main__":
                 'size': 16,
                }
         ax_2.text(0, 3000, "duration:    " + str(min_1) + "min : "  + str(sec_1) + "sec : " + str(msec_1) + "msec\n", fontdict=font)
-        ax_2.text(10000, 70, "ID1 ratio: " + "{0:.2f}".format(ratio_1) + " - diff_time:\n        min: " + "{0:.2f}".format(np.min(diff_time_1)) + "ms\n        mean: " + "{0:.2f}".format(np.mean(diff_time_1)) + "ms\n        max: " + "{0:.2f}".format(np.max(diff_time_1)) + "ms\n        std dev: " + "{0:.2f}".format(np.std(diff_time_1)), fontdict=font)
+        if FILTERED:
+            ax_2.text(2500, 50, "ID1 ratio: " + "{0:.4f}".format(ratio_1) + "    diff_time:  [min: " + "{0:.2f}".format(np.min(diff_time_1)) + "ms,  mean: " + "{0:.2f}".format(np.mean(diff_time_1)) + "ms,  max: " + "{0:.2f}".format(np.max(diff_time_1)) + "ms,  std dev: " + "{0:.2f}".format(np.std(diff_time_1)) + "]", fontdict=font)
+        else:
+            ax_2.text(8500, 1000, "diff_time:\n        min: " + "{0:.2f}".format(np.min(diff_time_1)) + "ms\n        mean: " + "{0:.2f}".format(np.mean(diff_time_1)) + "ms\n        max: " + "{0:.2f}".format(np.max(diff_time_1)) + "ms\n        std dev: " + "{0:.2f}".format(np.std(diff_time_1)), fontdict=font)
         ax_2.set_ylabel('ID1 diff timestamp[milliseconds]', size=10)
         ax_2.grid(True)
         curves = ["ID1  -  CAN diff time"]
@@ -131,8 +151,11 @@ if __name__ == "__main__":
                 'weight': 'normal',
                 'size': 16,
                }
-        ax_3.text(0, 3000, "duration:    " + str(min_7) + "min : "  + str(sec_7) + "sec : " + str(msec_7) + "msec\n", fontdict=font)
-        ax_3.text(10000, 70, "ID7 ratio: " + "{0:.2f}".format(ratio_7) + " diff_time:\n        min: " + "{0:.2f}".format(np.min(diff_time_7)) + "ms\n        mean: " + "{0:.2f}".format(np.mean(diff_time_7)) + "ms\n        max: " + "{0:.2f}".format(np.max(diff_time_7)) + "ms\n        std dev: " + "{0:.2f}".format(np.std(diff_time_7)), fontdict=font)
+        ax_3.text(0, 6000, "duration:    " + str(min_7) + "min : "  + str(sec_7) + "sec : " + str(msec_7) + "msec\n", fontdict=font)
+        if FILTERED:
+            ax_3.text(2500, 500, "ID7 ratio: " + "{0:.4f}".format(ratio_7) + "    diff_time:  [min: " + "{0:.2f}".format(np.min(diff_time_7)) + "ms,  mean: " + "{0:.2f}".format(np.mean(diff_time_7)) + "ms,  max: " + "{0:.2f}".format(np.max(diff_time_7)) + "ms,  std dev: " + "{0:.2f}".format(np.std(diff_time_7)) + "]", fontdict=font)
+        else:
+            ax_3.text(8000, 1000, "diff_time:\n        min: " + "{0:.2f}".format(np.min(diff_time_7)) + "ms\n        mean: " + "{0:.2f}".format(np.mean(diff_time_7)) + "ms\n        max: " + "{0:.2f}".format(np.max(diff_time_7)) + "ms\n        std dev: " + "{0:.2f}".format(np.std(diff_time_7)), fontdict=font)
         ax_3.set_ylabel('ID7 diff timestamp[milliseconds]', size=10)
         ax_3.grid(True)
         curves = ["ID7  -  CAN diff time"]
