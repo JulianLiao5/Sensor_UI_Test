@@ -66,14 +66,17 @@ if __name__ == "__main__":
         timestamp_0, timestamp_1, timestamp_7 = loadradar(sys.argv[1])
         ## print(timestamp_0)
         diff_time_0_origin = np.diff(timestamp_0)
-        diff_time_0 = diff_time_0_origin
-        #diff_time_0 = [x for x in diff_time_0_origin if x < 1000]
+        #diff_time_0 = diff_time_0_origin
+        diff_time_0 = [x for x in diff_time_0_origin if x < 1000]
+        ratio_0 = (len(diff_time_0_origin) - len(diff_time_0)) / len(diff_time_0_origin)
         diff_time_1_origin = np.diff(timestamp_1)
-        diff_time_1 = diff_time_1_origin
-        #diff_time_1 = [x for x in diff_time_1_origin if x < 1000]
+        #diff_time_1 = diff_time_1_origin
+        diff_time_1 = [x for x in diff_time_1_origin if x < 1000]
+        ratio_1 = (len(diff_time_1_origin) - len(diff_time_1)) / len(diff_time_1_origin)
         diff_time_7_origin = np.diff(timestamp_7)
-        diff_time_7 = diff_time_7_origin
-        #diff_time_7 = [x for x in diff_time_7_origin if x < 1000]
+        #diff_time_7 = diff_time_7_origin
+        diff_time_7 = [x for x in diff_time_7_origin if x < 1000]
+        ratio_7 = (len(diff_time_7_origin) - len(diff_time_7)) / len(diff_time_7_origin)
         duration_0 = timestamp_0[len(timestamp_0) - 1] - timestamp_0[0]
         min_0 = int(duration_0 / (1000 * 60))
         sec_0 = int((duration_0 - (min_0 * 1000 * 60)) / 1000)
@@ -91,12 +94,13 @@ if __name__ == "__main__":
         ax_1 = figure1.add_subplot(3, 1, 1)
         ax_1.plot(diff_time_0, '-b')
         font = {'family': 'serif',
-                'color':  'blue',
+                #'color':  'blue',
+                'color':  'black',
                 'weight': 'normal',
                 'size': 16,
                }
         ax_1.text(0, 3000, "duration:    " + str(min_0) + "min : "  + str(sec_0) + "sec : " + str(msec_0) + "msec\n", fontdict=font)
-        ax_1.text(12000, 1000, "ID0 - diff_time:\n        min: " + "{0:.2f}".format(np.min(diff_time_0)) + "ms\n        mean: " + "{0:.2f}".format(np.mean(diff_time_0)) + "ms\n        max: " + "{0:.2f}".format(np.max(diff_time_0)) + "ms\n        std dev: " + "{0:.2f}".format(np.std(diff_time_0)), fontdict=font)
+        ax_1.text(10000, 70, "ID0 ratio: " + "{0:.2f}".format(ratio_0) + " diff_time:\n        min: " + "{0:.2f}".format(np.min(diff_time_0)) + "ms\n        mean: " + "{0:.2f}".format(np.mean(diff_time_0)) + "ms\n        max: " + "{0:.2f}".format(np.max(diff_time_0)) + "ms\n        std dev: " + "{0:.2f}".format(np.std(diff_time_0)), fontdict=font)
         ax_1.set_ylabel('ID0 diff timestamp[milliseconds]', size=10)
         ax_1.grid(True)
         curves = ["ID0  -  CAN diff time"]
@@ -106,12 +110,13 @@ if __name__ == "__main__":
         ax_2 = figure1.add_subplot(3, 1, 2)
         ax_2.plot(diff_time_1, '-g')
         font = {'family': 'serif',
-                'color':  'green',
+                #'color':  'green',
+                'color':  'black',
                 'weight': 'normal',
                 'size': 16,
                }
         ax_2.text(0, 3000, "duration:    " + str(min_1) + "min : "  + str(sec_1) + "sec : " + str(msec_1) + "msec\n", fontdict=font)
-        ax_2.text(12000, 1000, "ID1 - diff_time:\n        min: " + "{0:.2f}".format(np.min(diff_time_1)) + "ms\n        mean: " + "{0:.2f}".format(np.mean(diff_time_1)) + "ms\n        max: " + "{0:.2f}".format(np.max(diff_time_1)) + "ms\n        std dev: " + "{0:.2f}".format(np.std(diff_time_1)), fontdict=font)
+        ax_2.text(10000, 70, "ID1 ratio: " + "{0:.2f}".format(ratio_1) + " - diff_time:\n        min: " + "{0:.2f}".format(np.min(diff_time_1)) + "ms\n        mean: " + "{0:.2f}".format(np.mean(diff_time_1)) + "ms\n        max: " + "{0:.2f}".format(np.max(diff_time_1)) + "ms\n        std dev: " + "{0:.2f}".format(np.std(diff_time_1)), fontdict=font)
         ax_2.set_ylabel('ID1 diff timestamp[milliseconds]', size=10)
         ax_2.grid(True)
         curves = ["ID1  -  CAN diff time"]
@@ -121,12 +126,13 @@ if __name__ == "__main__":
         ax_3 = figure1.add_subplot(3, 1, 3)
         ax_3.plot(diff_time_7, '-m')
         font = {'family': 'serif',
-                'color':  'magenta',
+                #'color':  'magenta',
+                'color':  'black',
                 'weight': 'normal',
                 'size': 16,
                }
         ax_3.text(0, 3000, "duration:    " + str(min_7) + "min : "  + str(sec_7) + "sec : " + str(msec_7) + "msec\n", fontdict=font)
-        ax_3.text(12000, 1000, "ID7 - diff_time:\n        min: " + "{0:.2f}".format(np.min(diff_time_7)) + "ms\n        mean: " + "{0:.2f}".format(np.mean(diff_time_7)) + "ms\n        max: " + "{0:.2f}".format(np.max(diff_time_7)) + "ms\n        std dev: " + "{0:.2f}".format(np.std(diff_time_7)), fontdict=font)
+        ax_3.text(10000, 70, "ID7 ratio: " + "{0:.2f}".format(ratio_7) + " diff_time:\n        min: " + "{0:.2f}".format(np.min(diff_time_7)) + "ms\n        mean: " + "{0:.2f}".format(np.mean(diff_time_7)) + "ms\n        max: " + "{0:.2f}".format(np.max(diff_time_7)) + "ms\n        std dev: " + "{0:.2f}".format(np.std(diff_time_7)), fontdict=font)
         ax_3.set_ylabel('ID7 diff timestamp[milliseconds]', size=10)
         ax_3.grid(True)
         curves = ["ID7  -  CAN diff time"]
