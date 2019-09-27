@@ -103,7 +103,7 @@ if __name__ == "__main__":
                 'weight': 'normal',
                 'size': 16,
                }
-        ax_1.text(100, 25, "161 interval:    mean: " + "{0:.2f}".format(np.mean(timestamp_161)) + "ms    max: " + "{0:.2f}".format(np.max(timestamp_161)) + "ms", fontdict=font)
+        ax_1.text(50, 15, "161 interval:    mean: " + "{0:.2f}".format(np.mean(timestamp_161)) + "ms    max: " + "{0:.2f}".format(np.max(timestamp_161)) + "ms", fontdict=font)
         #ax_1.set_ylabel('ID0 diff timestamp[milliseconds]', size=10)
         ax_1.grid(True)
         curves = ["VCU  -  161"]
